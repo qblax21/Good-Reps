@@ -323,7 +323,7 @@ export function WolfArt({ size = 160, raised = false, instant = false }: { size?
   const K = '#1E1E23', B = '#34343C', H = '#4A4A54';
   const lift = useEased(raised ? 1 : 0, WOLF_RAISE_MS, instant);
   return (
-    <svg viewBox="0 0 220 200" width={size} height={size * (200 / 220)} aria-hidden="true">
+    <svg viewBox="0 0 220 200" width={size} height={size * (200 / 220)} aria-hidden="true" style={{ overflow: 'visible' }}>
       <ellipse cx={104} cy={190} rx={74} ry={6} fill="#000" opacity={0.12} />
       {/* bushy tail */}
       <path d="M66 110 L40 114 L12 128 L28 118 L6 116 L30 108 L14 98 L42 102 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
@@ -337,10 +337,9 @@ export function WolfArt({ size = 160, raised = false, instant = false }: { size?
       <path d={zig(105, 113, 50, 19, 24, 0.17, 4)} fill={K} />
       <path d="M78 104 l10 -4 M96 100 l10 -3 M112 102 l9 -2 M88 122 l10 1 M106 124 l10 0" stroke={H} strokeWidth={2} strokeLinecap="round" />
       {/* the other front leg: swings slowly from the ground up into a salute */}
-      <g transform={`translate(152 112) rotate(${(172 + (WOLF_SALUTE_ANGLE - 172) * lift).toFixed(2)}) scale(1 ${(0.82 + 0.18 * lift).toFixed(3)})`}>
-        <path d="M-7 4 L-6 -46 L-5 -84 L5 -84 L6 -46 L7 4 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
-        <path d={zig(0, -44, 8, 18, 7, 0.35, 41)} fill={K} />
-        <circle cx={0} cy={-90} r={9} fill={K} />
+      {/* Same tapered shape and length as his other legs; it pivots at the shoulder. */}
+      <g transform={`translate(151 116) rotate(${(180 + (WOLF_SALUTE_ANGLE - 180) * lift).toFixed(2)})`}>
+        <path d="M-7 0 L-4.5 -70 L4.5 -70 L7 0 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
       </g>
       {/* neck ruff */}
       <path d={zig(146, 100, 22, 22, 12, 0.26, 7)} fill={K} />
