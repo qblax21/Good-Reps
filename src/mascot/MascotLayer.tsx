@@ -146,7 +146,7 @@ export function MascotLayer() {
   useEffect(() => {
     if (!wolf) return;
     const next = { walk: 'salute', salute: 'away', away: null } as const;
-    const wait = { walk: calm ? 500 : 2300, salute: 2400, away: calm ? 400 : 1700 }[wolf];
+    const wait = { walk: calm ? 500 : 2300, salute: calm ? 2400 : 3600, away: calm ? 400 : 1700 }[wolf];
     const t = setTimeout(() => setWolf(next[wolf]), wait);
     return () => clearTimeout(t);
   }, [wolf, calm]);
@@ -271,7 +271,7 @@ export function MascotLayer() {
             role="img" aria-label="A wolf walks up, raises a paw to you, and heads off into the distance"
           >
             <motion.div animate={wolf === 'walk' && !calm ? { y: [0, -3, 0] } : { y: 0 }} transition={{ repeat: wolf === 'walk' ? Infinity : 0, duration: 0.35 }}>
-              <WolfArt size={176} raised={wolf === 'salute'} />
+              <WolfArt size={176} raised={wolf !== 'walk'} instant={calm} />
             </motion.div>
           </motion.div>
         )}

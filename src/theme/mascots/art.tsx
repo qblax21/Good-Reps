@@ -3,7 +3,7 @@
  * a night owl, and daisies. All plain SVG so they stay crisp at any size.
  * Real illustrations can still replace the dogs via `images` in dogs.ts.
  */
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Pose, DogConfig } from './dogs';
 
 const INK = '#2A1D17';
@@ -285,12 +285,43 @@ export function PatinaArt({ size = 120 }: { size?: number }) {
   );
 }
 
+/** How the wolf's salute moves: slow and deliberate. Angle is degrees from straight up. */
+const WOLF_RAISE_MS = 1600;
+const WOLF_SALUTE_ANGLE = 24;
+
+/** Smoothly moves a number toward `target` over `ms` (ease in and out). */
+function useEased(target: number, ms: number, instant: boolean): number {
+  const [value, setValue] = useState(target);
+  const current = useRef(target);
+  useEffect(() => {
+    if (instant || typeof requestAnimationFrame === 'undefined') {
+      current.current = target;
+      setValue(target);
+      return;
+    }
+    const from = current.current;
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (t: number) => {
+      const k = Math.min(1, (t - t0) / ms);
+      const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      current.current = from + (target - from) * e;
+      setValue(current.current);
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, ms, instant]);
+  return value;
+}
+
 /**
  * A shaggy black wolf, side-on with his head turned toward her, in the same flat style as the
- * others. `raised` lifts one front paw straight up in a quiet salute.
+ * others. `raised` slowly lifts one front paw up in a quiet salute (`instant` skips the motion).
  */
-export function WolfArt({ size = 160, raised = false }: { size?: number; raised?: boolean }) {
+export function WolfArt({ size = 160, raised = false, instant = false }: { size?: number; raised?: boolean; instant?: boolean }) {
   const K = '#1E1E23', B = '#34343C', H = '#4A4A54';
+  const lift = useEased(raised ? 1 : 0, WOLF_RAISE_MS, instant);
   return (
     <svg viewBox="0 0 220 200" width={size} height={size * (200 / 220)} aria-hidden="true">
       <ellipse cx={104} cy={190} rx={74} ry={6} fill="#000" opacity={0.12} />
@@ -305,16 +336,12 @@ export function WolfArt({ size = 160, raised = false }: { size?: number; raised?
       {/* shaggy body */}
       <path d={zig(105, 113, 50, 19, 24, 0.17, 4)} fill={K} />
       <path d="M78 104 l10 -4 M96 100 l10 -3 M112 102 l9 -2 M88 122 l10 1 M106 124 l10 0" stroke={H} strokeWidth={2} strokeLinecap="round" />
-      {/* the other front leg: down while walking, straight up in a salute */}
-      {raised ? (
-        <g>
-          <path d="M146 116 L158 100 L184 56 L194 24 L206 28 L198 60 L168 118 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
-          <path d={zig(180, 72, 8, 20, 7, 0.35, 41)} fill={K} transform="rotate(28 180 72)" />
-          <circle cx={200} cy={20} r={9} fill={K} />
-        </g>
-      ) : (
-        <path d="M144 120 L146 186 L155 186 L158 118 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
-      )}
+      {/* the other front leg: swings slowly from the ground up into a salute */}
+      <g transform={`translate(152 112) rotate(${(172 + (WOLF_SALUTE_ANGLE - 172) * lift).toFixed(2)}) scale(1 ${(0.82 + 0.18 * lift).toFixed(3)})`}>
+        <path d="M-7 4 L-6 -46 L-5 -84 L5 -84 L6 -46 L7 4 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+        <path d={zig(0, -44, 8, 18, 7, 0.35, 41)} fill={K} />
+        <circle cx={0} cy={-90} r={9} fill={K} />
+      </g>
       {/* neck ruff */}
       <path d={zig(146, 100, 22, 22, 12, 0.26, 7)} fill={K} />
       {/* head turned toward her: pointed ears, pale eyes */}
