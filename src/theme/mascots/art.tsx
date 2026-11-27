@@ -215,41 +215,60 @@ export function DogArt({ dog, pose, size = 160 }: { dog: DogConfig; pose: Pose; 
 }
 
 /**
- * Patina, the grandkitty, in the same flat style as Daisy and Eddie: a long-haired tortoiseshell.
- * Dark fur with ginger patches, a ginger blaze down one side of her face, yellow-green eyes,
- * spiky long-hair cheeks and ruff, and a light ginger chest.
+ * Patina, the grandkitty, in the same flat style as Daisy and Eddie: a long-haired tortoiseshell
+ * sitting up. Dark fur with ginger patches, a ginger blaze down one side of her face, yellow-green
+ * eyes, small rounded ears, long-hair cheeks and ruff, a light ginger chest, one paw with ginger
+ * toes, and a plumed tail with a ginger tip.
  */
 export function PatinaArt({ size = 120 }: { size?: number }) {
-  const K = '#2B2320', B = '#4A3A32', G = '#D08A45', GL = '#E8B67A', P = '#C79A92', E = '#C9D36A';
-  // Chest with a long-hair zig-zag top edge.
-  let chest = 'M36 204 L48 156';
-  for (let i = 0; i <= 14; i++) chest += ` L${48 + (i * 104) / 14} ${i % 2 ? 146 : 154}`;
-  chest += ' L164 204 Z';
+  const K = '#2B2320', B = '#4A3A32', G = '#D08A45', GL = '#E8B67A', P = '#C79A92', E = '#C9D36A', LEG = '#231C19';
+  // Long-hair tufts along her sides (left side; mirrored).
+  let side = 'M60 176';
+  for (let i = 0; i < 5; i++) side += ` L${46 - (i % 2) * 2} ${186 + i * 13} L58 ${192 + i * 13}`;
+  side += ' L64 176 Z';
   // Fluffy cheek fur sticking out sideways (left side; mirrored).
-  const cheek = 'M56 96 L34 102 L52 110 L30 118 L52 124 L36 134 L58 136 L62 100 Z';
+  const cheek = 'M56 96 L36 102 L52 110 L32 118 L52 124 L38 134 L58 136 L62 100 Z';
   return (
-    <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true">
-      <path d={chest} fill={K} />
-      <path d="M48 170 L66 158 L74 184 L52 204 L40 204 Z" fill={G} />
-      <path d="M136 162 L156 172 L160 204 L140 204 Z" fill={B} />
-      <path d="M78 204 L86 162 L93 170 L100 158 L107 170 L114 162 L122 204 Z" fill={GL} />
-      <path d="M96 204 L100 182 L106 204 Z" fill={G} />
+    <svg viewBox="0 34 200 230" width={size} height={size * 1.15} aria-hidden="true">
+      {/* plumed tail curled round the front, ginger tip */}
+      <path d="M140 250 Q186 254 184 214 Q183 200 172 194" stroke={B} strokeWidth={18} strokeLinecap="round" fill="none" />
+      <path d="M180 208 Q180 198 172 194" stroke={G} strokeWidth={18} strokeLinecap="round" fill="none" />
+
+      {/* sitting body with long-hair sides and tortie patches */}
+      <Mirror><path d={side} fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" /></Mirror>
+      <path d="M70 150 L56 182 L52 252 L148 252 L144 182 L130 150 Z" fill={K} stroke={K} strokeWidth={10} strokeLinejoin="round" />
+      <path d="M120 186 L146 196 L148 252 L114 252 Z" fill={B} />
+      <path d="M56 186 L72 172 L80 198 L58 220 Z" fill={G} stroke={G} strokeWidth={3} strokeLinejoin="round" />
+      <path d="M128 214 L146 222 L146 248 L124 242 Z" fill={G} stroke={G} strokeWidth={3} strokeLinejoin="round" />
+      <path d="M60 232 L72 238 L66 250 L56 248 Z" fill={B} />
+
+      {/* light ginger chest fluff */}
+      <path d="M82 150 L90 160 L100 150 L110 160 L118 150 L114 192 L100 204 L86 192 Z" fill={GL} stroke={GL} strokeWidth={3} strokeLinejoin="round" />
+      <path d="M98 162 L104 166 L101 192 L96 186 Z" fill={G} />
+
+      {/* front legs and paws, one with ginger toes */}
+      <path d="M82 196 L80 250 L98 250 L98 202 Z" fill={LEG} stroke={LEG} strokeWidth={4} strokeLinejoin="round" />
+      <path d="M102 202 L102 250 L120 250 L118 196 Z" fill={LEG} stroke={LEG} strokeWidth={4} strokeLinejoin="round" />
+      <rect x={76} y={244} width={25} height={14} rx={7} fill={LEG} />
+      <rect x={100} y={244} width={25} height={14} rx={7} fill={LEG} />
+      <rect x={78} y={249} width={8} height={8} rx={4} fill={GL} />
+      <rect x={87} y={250} width={8} height={7} rx={3.5} fill={GL} />
+
       {/* ruff behind the head */}
       <path d={zig(100, 128, 60, 30, 16, 0.18, 21)} fill={B} />
       <Mirror>
-        {/* tall cat ears with tufts */}
-        <path d="M58 92 L56 28 L94 64 Z" fill={K} stroke={K} strokeWidth={8} strokeLinejoin="round" />
-        <path d="M63 80 L62 44 L84 64 Z" fill={P} stroke={P} strokeWidth={4} strokeLinejoin="round" />
-        <path d="M66 74 L64 54 M71 72 L70 58" stroke="#E6D3C6" strokeWidth={2.2} strokeLinecap="round" />
-        <path d="M56 28 L52 18 M57 29 L59 17" stroke={K} strokeWidth={3} strokeLinecap="round" />
+        {/* small, rounded ears */}
+        <path d="M60 88 Q55 48 64 42 Q82 50 94 68 Z" fill={K} stroke={K} strokeWidth={8} strokeLinejoin="round" />
+        <path d="M66 80 Q62 58 68 52 Q80 58 87 70 Z" fill={P} stroke={P} strokeWidth={3} strokeLinejoin="round" />
+        <path d="M69 76 L67 60 M74 74 L74 63" stroke="#E6D3C6" strokeWidth={2} strokeLinecap="round" />
         <path d={cheek} fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
       </Mirror>
       {/* head */}
-      <path d="M100 60 L140 74 L152 106 L136 138 L100 150 L64 138 L48 106 L60 74 Z" fill={K} stroke={K} strokeWidth={12} strokeLinejoin="round" />
-      <path d="M100 60 L140 74 L152 106 L136 138 L100 150 Z" fill="#000" opacity={0.1} />
+      <path d="M100 62 L140 74 L152 106 L136 138 L100 150 L64 138 L48 106 L60 74 Z" fill={K} stroke={K} strokeWidth={12} strokeLinejoin="round" />
+      <path d="M100 62 L140 74 L152 106 L136 138 L100 150 Z" fill="#000" opacity={0.1} />
       {/* her split face: ginger blaze down one side of the nose, a few flecks on the other cheek */}
-      <path d="M97 62 L107 64 L101 102 L96 124 L86 122 L92 98 Z" fill={G} stroke={G} strokeWidth={4} strokeLinejoin="round" />
-      <path d="M99 70 L101 72 L97 100 L95 98 Z" fill={GL} />
+      <path d="M97 64 L107 66 L101 102 L96 124 L86 122 L92 98 Z" fill={G} stroke={G} strokeWidth={4} strokeLinejoin="round" />
+      <path d="M99 72 L101 74 L97 100 L95 98 Z" fill={GL} />
       <path d="M126 118 L134 114 L132 122 Z M118 128 L124 126 L122 132 Z" fill={G} />
       <path d="M68 126 L74 132 L66 134 Z" fill={B} />
       {/* yellow-green eyes with slit pupils */}
