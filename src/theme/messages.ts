@@ -11,8 +11,8 @@
  */
 
 export const greetings = {
-  morning: ['Good morning, {name}!', 'Rise and shine, {name}!', 'Morning! Daisy’s ears are already up.'],
-  afternoon: ['Good afternoon, {name}!', 'Hi {name}! Eddie says hi too.', 'Hello, sunshine!'],
+  morning: ['Good morning, {name}!', 'Rise and shine, {name}!', 'Morning! Daisy is already barking about breakfast.'],
+  afternoon: ['Good afternoon, {name}!', 'Hi {name}! Eddie has kisses waiting.', 'Hello, sunshine!'],
   evening: ['Good evening, {name}!', 'Evening, {name}!', 'Hi {name}, cozy evening?'],
   night: ['Hello, night owl!', 'Still up, {name}?'],
 };
@@ -24,8 +24,8 @@ export const dailyLines = [
   'You showed up. That’s the hard part.',
   'Gentle progress is still progress.',
   'Proud of you, Mom. Every single time.',
-  'Daisy’s official ruling: you’re doing great.',
-  'Eddie believes in you. He also believes there are treats in your pocket.',
+  'Daisy’s official ruling: you’re doing great. (Snacks are still due.)',
+  'Eddie believes in you. Daisy believes there are treats in your pocket.',
   'Moving today is a gift to future you.',
   'Good reps, good Mom. (Daisy and Eddie agree.)',
   'Love you, Mom. Go get ’em.',
@@ -35,7 +35,7 @@ export const dailyLines = [
 export const restDayLines = [
   'Rest day! Muscles grow while you relax.',
   'No workout today. A walk with the pups is a bonus.',
-  'Feet up. Daisy is already showing you how.',
+  'Feet up. Eddie is already on the couch saving you a spot.',
   'Rest is part of the plan. Enjoy it, Mom.',
 ];
 
@@ -62,7 +62,7 @@ export const backupNudge = 'It’s been a while since your last backup. Save a c
 export const nightOwlLines = ['Night owl! Hoo-hoo-hooray for you!', 'Whooo is working out this late? You are!'];
 
 /** Raccoon easter egg. */
-export const raccoonLines = ['(a raccoon sneaks by…)', 'Psst… don’t tell Daisy and Eddie.'];
+export const raccoonLines = ['(a raccoon sneaks by…)', 'Psst… don’t tell Daisy. She’ll bark.'];
 
 /** Fill {tokens} in a line. */
 export function fill(line: string, vars: Record<string, string | number>): string {
