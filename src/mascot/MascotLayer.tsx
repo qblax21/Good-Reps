@@ -206,7 +206,7 @@ export function MascotLayer() {
         )}
       </AnimatePresence>
 
-      {/* Patina strolls in from the right, loafs for a moment, judges, leaves */}
+      {/* Patina strolls in from the right, sits with her for a moment, then leaves */}
       <AnimatePresence>
         {cat && (
           <motion.button

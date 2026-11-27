@@ -214,48 +214,100 @@ export function DogArt({ dog, pose, size = 160 }: { dog: DogConfig; pose: Pose; 
   return dog.art === 'corgi' ? <CorgiArt pose={pose} size={size} /> : <TerrierCorgiArt pose={pose} size={size} />;
 }
 
+/** Short fur strokes sprouting from an ellipse's edge between angles a0..a1 (degrees). Deterministic. */
+function furEdge(cx: number, cy: number, rx: number, ry: number, count: number, len: number, a0: number, a1: number, seed: number): string {
+  let s = seed;
+  const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+  let d = '';
+  for (let i = 0; i < count; i++) {
+    const a = ((a0 + ((a1 - a0) * (i + r() * 0.8)) / count) * Math.PI) / 180;
+    const x = cx + Math.cos(a) * rx, y = cy + Math.sin(a) * ry;
+    const l = len * (0.6 + 0.6 * r()), t = a + (r() - 0.5) * 0.6;
+    d += `M${x.toFixed(1)} ${y.toFixed(1)} L${(x + Math.cos(t) * l).toFixed(1)} ${(y + Math.sin(t) * l).toFixed(1)} `;
+  }
+  return d;
+}
+
 /**
- * Patina: long-haired tortoiseshell cat in a loaf. Black and dark brown with ginger mottling,
- * a ginger stripe down one side of her face, half-closed yellow-green "not impressed" eyes,
- * one ginger toe and a plumed tail with a ginger tip.
+ * Patina, the grandkitty: a long-haired tortoiseshell sitting up. Black and dark brown with soft
+ * ginger mottling, a ginger blaze down one side of her face, yellow-green eyes, a fluffy neck ruff,
+ * one paw with ginger toes, and a plumed tail with a ginger tip curled round her feet.
  */
 export function PatinaArt({ size = 120 }: { size?: number }) {
-  const K = '#2A2320', B = '#3D2F28', G = '#C98A4B', GL = '#DDA66A';
+  const K = '#211A17', B = '#3A2D27', G = '#C98A4B', GL = '#E0AE72', LEG = '#241C19';
+  const BODY = 'M58 210 C48 182 54 140 78 118 L122 118 C146 140 152 182 142 210 Z';
   return (
-    <svg viewBox="0 0 200 170" width={size} height={size * 0.85} aria-hidden="true">
-      {/* plumed tail wrapping round the right side */}
-      <path d="M138 150 Q196 162 190 118 Q186 102 172 108 Q180 140 134 136 Z" fill={B} />
-      <circle cx={186} cy={114} r={9} fill={G} />
-      {/* fluffy loaf body with ginger patches */}
-      <path d={zig(100, 122, 70, 40, 22, 0.06, 3)} fill={K} stroke={K} strokeWidth={4} strokeLinejoin="round" />
-      <path d={zig(68, 114, 18, 10, 7, 0.3, 5)} fill={G} opacity={0.85} />
-      <path d={zig(134, 106, 14, 9, 6, 0.3, 6)} fill={GL} opacity={0.7} />
-      <path d={zig(124, 134, 12, 7, 6, 0.3, 7)} fill={G} opacity={0.6} />
-      <path d={zig(100, 142, 18, 13, 8, 0.3, 8)} fill={GL} opacity={0.55} />
-      {/* front paws, one ginger toe */}
-      <ellipse cx={84} cy={158} rx={12} ry={7} fill={K} />
-      <ellipse cx={116} cy={158} rx={12} ry={7} fill={K} />
-      <ellipse cx={80} cy={159} rx={4} ry={3} fill={G} />
-      {/* ruff, ears, head */}
-      <path d={zig(100, 80, 50, 40, 18, 0.12, 9)} fill={B} />
+    <svg viewBox="0 0 200 220" width={size} height={size * 1.1} aria-hidden="true">
+      <defs>
+        <clipPath id="patina-body"><path d={BODY} /></clipPath>
+        <filter id="patina-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" /></filter>
+      </defs>
+
+      {/* body with soft tortie mottling */}
+      <path d={BODY} fill={K} />
+      <g clipPath="url(#patina-body)">
+        <g filter="url(#patina-soft)">
+          <ellipse cx={130} cy={160} rx={16} ry={24} fill={G} opacity={0.6} />
+          <ellipse cx={70} cy={178} rx={12} ry={18} fill={GL} opacity={0.45} />
+          <ellipse cx={122} cy={194} rx={16} ry={8} fill={G} opacity={0.5} />
+          <ellipse cx={74} cy={138} rx={9} ry={10} fill={G} opacity={0.45} />
+          <ellipse cx={138} cy={132} rx={8} ry={10} fill={B} />
+        </g>
+      </g>
+      <path d={furEdge(100, 166, 46, 46, 28, 5, 150, 215, 3) + furEdge(100, 166, 46, 46, 28, 5, -35, 30, 4)} stroke={K} strokeWidth={1.5} strokeLinecap="round" />
+
+      {/* chest ruff */}
+      <path d="M78 116 Q100 110 122 116 Q126 140 100 162 Q74 140 78 116 Z" fill="#2E2420" />
+      <path d={furEdge(100, 126, 12, 12, 12, 16, 60, 120, 5)} stroke={GL} strokeWidth={1.6} strokeLinecap="round" opacity={0.65} />
+      <path d={furEdge(100, 150, 18, 6, 14, 6, 30, 150, 6)} stroke="#2E2420" strokeWidth={1.6} strokeLinecap="round" />
+
+      {/* front legs and paws, one with ginger toes */}
+      <path d="M80 150 C78 172 80 196 82 207 L98 207 C99 190 99 168 98 150 Z" fill={LEG} />
+      <path d="M102 150 C101 168 101 190 102 207 L118 207 C120 196 122 172 120 150 Z" fill={LEG} />
+      <path d="M100 156 L100 204" stroke="#0F0B09" strokeWidth={1.4} opacity={0.6} />
+      <ellipse cx={88} cy={208} rx={11} ry={6} fill={LEG} />
+      <ellipse cx={112} cy={208} rx={11} ry={6} fill={LEG} />
+      <ellipse cx={83.5} cy={209.5} rx={3.2} ry={2.6} fill={GL} />
+      <ellipse cx={89.5} cy={210.5} rx={3.2} ry={2.6} fill={GL} />
+
+      {/* plumed tail curled round her feet, ginger tip */}
+      <path d="M134 206 C172 212 192 196 188 176 C186 166 178 163 173 169 C178 186 162 197 128 195 Z" fill={B} />
+      <path d={furEdge(160, 196, 28, 12, 24, 5, 10, 170, 7)} stroke={B} strokeWidth={1.5} strokeLinecap="round" />
+      <ellipse cx={182} cy={172} rx={8} ry={10} fill={G} transform="rotate(-25 182 172)" />
+
+      {/* neck mane behind the head */}
+      <path d={zig(100, 110, 42, 16, 22, 0.1, 11)} fill="#2C231F" />
+
+      {/* ears with soft inner fur */}
       <Mirror>
-        <path d="M64 60 L60 22 L90 44 Z" fill={K} stroke={K} strokeWidth={6} strokeLinejoin="round" />
-        <path d="M68 54 L66 32 L84 46 Z" fill="#7A5F58" />
-        <path d="M61 26 L58 19 M63 25 L63 18" stroke={B} strokeWidth={3} strokeLinecap="round" />
+        <path d="M64 66 L62 22 Q80 30 92 46 Z" fill={K} stroke={K} strokeWidth={4} strokeLinejoin="round" />
+        <path d="M68 58 L67 32 Q80 38 86 48 Z" fill="#8E6F68" />
+        <path d="M70 58 L70 40 M74 56 L76 42 M78 54 L81 46" stroke="#D8C3B0" strokeWidth={1.4} strokeLinecap="round" opacity={0.8} />
       </Mirror>
-      <path d={zig(100, 76, 42, 35, 20, 0.07, 10)} fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
-      {/* her split face: ginger stripe down one side of the nose */}
-      <path d="M97 40 L109 43 L104 62 L101 84 L95 95 L84 92 L90 74 Z" fill={G} />
-      <path d="M80 62 L88 58 L86 66 Z M116 96 L124 94 L120 100 Z" fill={GL} opacity={0.6} />
-      <ellipse cx={95} cy={103} rx={5} ry={3} fill={G} opacity={0.8} />
+
+      {/* head with fluffy cheeks */}
+      <path d="M100 40 C128 40 144 58 144 78 C144 96 130 108 112 112 L88 112 C70 108 56 96 56 78 C56 58 72 40 100 40 Z" fill={K} />
+      <path d={furEdge(100, 86, 44, 24, 18, 7, 150, 215, 8) + furEdge(100, 86, 44, 24, 18, 7, -35, 30, 9)} stroke={K} strokeWidth={1.8} strokeLinecap="round" />
+
+      {/* her split face: ginger blaze down one side, a few ginger flecks on the other cheek */}
+      <path d="M99 42 C104 42 108 46 106 56 L103 74 L101 90 L95 100 L86 96 C88 86 92 76 94 66 C95 56 95 46 99 42 Z" fill={G} />
+      <path d="M100 46 C102 54 100 66 98 78" stroke={GL} strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.8} />
+      <path d="M118 98 l4 -2 M124 92 l3 1 M114 104 l3 0" stroke={G} strokeWidth={1.8} strokeLinecap="round" opacity={0.7} />
+
+      {/* soft, open yellow-green eyes */}
       <Mirror>
-        <ellipse cx={84} cy={80} rx={7.5} ry={5.5} fill="#C9D36A" />
-        <ellipse cx={84} cy={80.5} rx={1.6} ry={4.5} fill="#1A1410" />
-        <path d="M75.5 79.5 Q84 74 92.5 79.5 L92.5 73 L75.5 73 Z" fill={K} />
-        <path d="M90 97 L66 93 M90 99 L66 100" stroke="#9A8F88" strokeWidth={1} opacity={0.7} />
+        <path d="M72 81 Q84 69 96 81 Q84 92 72 81 Z" fill="#C9D36A" stroke="#120D0A" strokeWidth={1.8} strokeLinejoin="round" />
+        <ellipse cx={84} cy={81} rx={3.4} ry={6.5} fill="#15100C" />
+        <circle cx={87} cy={77.5} r={2.2} fill="#fff" />
+        <circle cx={81.5} cy={84.5} r={1} fill="#fff" opacity={0.7} />
+        <path d="M92 104 L60 97 M92 106 L58 106 M92 108 L62 114" stroke="#BDB2A8" strokeWidth={0.9} opacity={0.8} />
       </Mirror>
-      <path d="M96 92 L104 92 L100 97 Z" fill="#3A2A28" stroke="#3A2A28" strokeWidth={2} strokeLinejoin="round" />
-      <path d="M100 97 Q97 101 94 100 M100 97 Q103 101 106 100" stroke="#6A5A55" strokeWidth={1.6} fill="none" strokeLinecap="round" />
+
+      {/* muzzle, nose and a small smile */}
+      <ellipse cx={94} cy={104} rx={8} ry={5} fill="#3A2E2A" />
+      <ellipse cx={106} cy={104} rx={8} ry={5} fill="#3A2E2A" />
+      <path d="M95 96 L105 96 L100 102 Z" fill="#8A5A55" stroke="#8A5A55" strokeWidth={1.5} strokeLinejoin="round" />
+      <path d="M100 102 Q97 106 93 105 M100 102 Q103 106 107 105" stroke="#5A4741" strokeWidth={1.4} fill="none" strokeLinecap="round" />
     </svg>
   );
 }
