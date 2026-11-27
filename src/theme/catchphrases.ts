@@ -22,19 +22,15 @@ export const catchphrases: Array<{ show: Show; text: string; who?: Speaker[] }> 
   { show: 'Psych', text: 'Suck it!' },
   { show: 'Psych', text: '*hides a pineapple somewhere in here*' },
   // Bones
-  { show: 'Bones', text: 'I don’t know what that means.' },
   { show: 'Bones', text: 'Nice work, Bones.' },
   { show: 'Bones', text: 'King of the lab! …er, gym!' },
   // Always Sunny
   { show: 'Always Sunny', text: 'I’m not fat, I’m cultivating mass.' },
   { show: 'Always Sunny', text: 'Wildcard!' },
-  { show: 'Always Sunny', text: 'Can I offer you a nice egg in this trying time?' },
   { show: 'Always Sunny', text: 'Rum ham!', who: ['daisy', 'raccoon'] },
   { show: 'Always Sunny', text: 'I’m well-versed in bird law.', who: ['owl'] },
   // Parks and Rec
   { show: 'Parks and Rec', text: 'Treat yo self!' },
-  { show: 'Parks and Rec', text: 'That was literally the best workout of all time.' },
-  { show: 'Parks and Rec', text: '{name}, you beautiful tropical fish.' },
   { show: 'Parks and Rec', text: 'Give me all the bacon and eggs you have.', who: ['daisy'] },
 ];
 
