@@ -214,6 +214,52 @@ export function DogArt({ dog, pose, size = 160 }: { dog: DogConfig; pose: Pose; 
   return dog.art === 'corgi' ? <CorgiArt pose={pose} size={size} /> : <TerrierCorgiArt pose={pose} size={size} />;
 }
 
+/**
+ * Patina: long-haired tortoiseshell cat in a loaf. Black and dark brown with ginger mottling,
+ * a ginger stripe down one side of her face, half-closed yellow-green "not impressed" eyes,
+ * one ginger toe and a plumed tail with a ginger tip.
+ */
+export function PatinaArt({ size = 120 }: { size?: number }) {
+  const K = '#2A2320', B = '#3D2F28', G = '#C98A4B', GL = '#DDA66A';
+  return (
+    <svg viewBox="0 0 200 170" width={size} height={size * 0.85} aria-hidden="true">
+      {/* plumed tail wrapping round the right side */}
+      <path d="M138 150 Q196 162 190 118 Q186 102 172 108 Q180 140 134 136 Z" fill={B} />
+      <circle cx={186} cy={114} r={9} fill={G} />
+      {/* fluffy loaf body with ginger patches */}
+      <path d={zig(100, 122, 70, 40, 22, 0.06, 3)} fill={K} stroke={K} strokeWidth={4} strokeLinejoin="round" />
+      <path d={zig(68, 114, 18, 10, 7, 0.3, 5)} fill={G} opacity={0.85} />
+      <path d={zig(134, 106, 14, 9, 6, 0.3, 6)} fill={GL} opacity={0.7} />
+      <path d={zig(124, 134, 12, 7, 6, 0.3, 7)} fill={G} opacity={0.6} />
+      <path d={zig(100, 142, 18, 13, 8, 0.3, 8)} fill={GL} opacity={0.55} />
+      {/* front paws, one ginger toe */}
+      <ellipse cx={84} cy={158} rx={12} ry={7} fill={K} />
+      <ellipse cx={116} cy={158} rx={12} ry={7} fill={K} />
+      <ellipse cx={80} cy={159} rx={4} ry={3} fill={G} />
+      {/* ruff, ears, head */}
+      <path d={zig(100, 80, 50, 40, 18, 0.12, 9)} fill={B} />
+      <Mirror>
+        <path d="M64 60 L60 22 L90 44 Z" fill={K} stroke={K} strokeWidth={6} strokeLinejoin="round" />
+        <path d="M68 54 L66 32 L84 46 Z" fill="#7A5F58" />
+        <path d="M61 26 L58 19 M63 25 L63 18" stroke={B} strokeWidth={3} strokeLinecap="round" />
+      </Mirror>
+      <path d={zig(100, 76, 42, 35, 20, 0.07, 10)} fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      {/* her split face: ginger stripe down one side of the nose */}
+      <path d="M97 40 L109 43 L104 62 L101 84 L95 95 L84 92 L90 74 Z" fill={G} />
+      <path d="M80 62 L88 58 L86 66 Z M116 96 L124 94 L120 100 Z" fill={GL} opacity={0.6} />
+      <ellipse cx={95} cy={103} rx={5} ry={3} fill={G} opacity={0.8} />
+      <Mirror>
+        <ellipse cx={84} cy={80} rx={7.5} ry={5.5} fill="#C9D36A" />
+        <ellipse cx={84} cy={80.5} rx={1.6} ry={4.5} fill="#1A1410" />
+        <path d="M75.5 79.5 Q84 74 92.5 79.5 L92.5 73 L75.5 73 Z" fill={K} />
+        <path d="M90 97 L66 93 M90 99 L66 100" stroke="#9A8F88" strokeWidth={1} opacity={0.7} />
+      </Mirror>
+      <path d="M96 92 L104 92 L100 97 Z" fill="#3A2A28" stroke="#3A2A28" strokeWidth={2} strokeLinejoin="round" />
+      <path d="M100 97 Q97 101 94 100 M100 97 Q103 101 106 100" stroke="#6A5A55" strokeWidth={1.6} fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /** Side-on raccoon tiptoeing (facing right). */
 export function RaccoonArt({ size = 120 }: { size?: number }) {
   return (

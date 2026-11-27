@@ -60,6 +60,9 @@ export const mascotTiming = {
   peekMinGapMs: 3 * 60 * 1000,
   /** Chance the raccoon sneaks past when she opens the app (rolled once a day; at most one visit a day). */
   raccoonChance: 0.3,
+  /** Chance Patina the cat drops by when she opens the app (rolled once a day), and after a finished workout. */
+  catChance: 0.25,
+  catAfterWorkoutChance: 0.15,
   /** Night-owl hours (24h clock): the owl visits once a night when she opens the app at/after `from` or before `to`. */
   nightOwl: { from: 21, to: 4 },
   /** Taps on a mascot needed to trigger a sploot / zoomies. */

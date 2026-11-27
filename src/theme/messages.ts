@@ -61,6 +61,20 @@ export const backupNudge = 'It’s been a while since your last backup. Save a c
 /** Owl easter egg. */
 export const nightOwlLines = ['Night owl! Hoo-hoo-hooray for you!', 'Whooo is working out this late? You are!'];
 
+/** Patina, the grandkitty: a long-haired tortoiseshell who drops by now and then. */
+export const catLines = [
+  'Patina stopped by. She is not impressed. (She never is.)',
+  '*Patina judges your form in silence*',
+  'Your grandkitty Patina says hi. From a safe distance.',
+  'Patina sat on your workout plan. It’s hers now.',
+  'The dogs are so loud. Patina is above all this.',
+];
+/** When Patina shows up right after a workout. */
+export const catFinishLines = [
+  'Patina saw that. Patina approves. Barely.',
+  'Patina gave you one slow blink. From her, that’s a standing ovation.',
+];
+
 /** Raccoon easter egg. */
 export const raccoonLines = ['(a raccoon sneaks by…)', 'Psst… don’t tell Daisy. She’ll bark.'];
 

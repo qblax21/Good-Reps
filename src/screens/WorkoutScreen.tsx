@@ -12,7 +12,7 @@ import { addExercise, addSet, finishWorkout, lastSession, removeExercise, sameAs
 import { suggestNext, whyText } from '../logic/progression';
 import { fmtSet, fmtDuration } from '../logic/history';
 import { fmtTarget, relDay, unitsOf } from '../logic/format';
-import { cheer, egg } from '../mascot/bus';
+import { cheer, claimOwlNight, egg } from '../mascot/bus';
 import { mascotTiming } from '../theme/config';
 import { DogArt } from '../theme/mascots/art';
 import { dogs } from '../theme/mascots/dogs';
@@ -30,13 +30,8 @@ export function WorkoutScreen({ workoutId }: { workoutId: string }) {
   // Night owl easter egg (once per workout)
   useEffect(() => {
     if (!workout || past) return;
-    const h = new Date(workout.startedAt).getHours();
-    const { from, to } = mascotTiming.nightOwl;
-    const key = `owl-${workout.id}`;
-    if ((h >= from || h < to) && !sessionStorage.getItem(key)) {
-      sessionStorage.setItem(key, '1');
-      setTimeout(() => egg({ kind: 'owl' }), 700);
-    }
+    // Shares the once-a-night limit with the owl that greets her when she opens the app.
+    if (claimOwlNight(mascotTiming.nightOwl, new Date(workout.startedAt))) setTimeout(() => egg({ kind: 'owl' }), 700);
   }, [workout, past]);
 
   if (!workout) return null;

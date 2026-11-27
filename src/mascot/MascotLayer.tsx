@@ -1,15 +1,15 @@
 /**
  * Draws every mascot moment on top of the app: celebration pop-ups, the occasional peek,
- * the rare raccoon, the night owl, and the secret sploot/zoomies.
+ * Patina the cat, the rare raccoon, the night owl, and the secret sploot/zoomies.
  * Nothing here ever blocks the screen — only the mascot itself catches taps.
  */
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dogs, otherDog, type DogConfig, type Pose } from '../theme/mascots/dogs';
-import { DogArt, OwlArt, RaccoonArt } from '../theme/mascots/art';
+import { DogArt, OwlArt, PatinaArt, RaccoonArt } from '../theme/mascots/art';
 import { mascotTiming as T, person } from '../theme/config';
-import { fill, nightOwlLines, pick, raccoonLines } from '../theme/messages';
-import { onCheer, onEgg, onScreen, mascotTapped, type Cheer } from './bus';
+import { catFinishLines, catLines, fill, nightOwlLines, pick, raccoonLines } from '../theme/messages';
+import { claimOwlNight, onCheer, onEgg, onScreen, mascotTapped, readFlag, writeFlag, type Cheer } from './bus';
 import { useSettings } from '../hooks/useStore';
 import { store } from '../data';
 import { dayKey } from '../logic/stats';
@@ -17,10 +17,6 @@ import { dayKey } from '../logic/stats';
 let turn = 0;
 /** Alternate between the dogs for each moment. */
 export const nextDog = (): DogConfig => dogs[turn++ % dogs.length];
-
-/** Small per-device flags; storage can be unavailable (private mode), so never throw. */
-const readFlag = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
-const writeFlag = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
 
 interface Popup { id: number; dog: DogConfig; pose: Pose; line: string }
 
@@ -37,8 +33,11 @@ export function MascotLayer() {
   const [peek, setPeek] = useState<DogConfig | null>(null);
   const [raccoon, setRaccoon] = useState<string | null>(null);
   const [owl, setOwl] = useState<string | null>(null);
+  const [cat, setCat] = useState<string | null>(null);
   const [trick, setTrick] = useState<{ dog: DogConfig; kind: 'sploot' | 'zoomies'; line: string } | null>(null);
   const lastPeek = useRef(0);
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
 
   const show = useCallback((dog: DogConfig, pose: Pose, line: string) => {
     setQueue((q) => [...q, { id: Date.now() + Math.random(), dog, pose, line }]);
@@ -52,6 +51,9 @@ export function MascotLayer() {
         const vars = { name: person.name, dog: dog.name, other: otherDog(dog).name, ...c.vars };
         const pose: Pose = c.event === 'hello' ? 'popup' : 'celebrate';
         show(dog, pose, fill(pick(dog.lines[c.event]), vars));
+        // Now and then Patina wanders in after the dogs are done celebrating.
+        if (c.event === 'finish' && settingsRef.current.easterEggs && Math.random() < T.catAfterWorkoutChance)
+          setTimeout(() => setCat(pick(catFinishLines)), T.popupVisibleMs + 800);
       }),
     [show],
   );
@@ -96,12 +98,10 @@ export function MascotLayer() {
         await store.updateSettings({ lastRaccoonDay: today });
         timers.push(window.setTimeout(() => setRaccoon(pick(raccoonLines)), 6000 + Math.random() * 12000));
       }
-      const h = now.getHours();
-      const night = h >= T.nightOwl.from || h < T.nightOwl.to;
-      const nightOf = dayKey(h < T.nightOwl.to ? now.getTime() - 86400000 : now); // after midnight counts as last night
-      if (night && readFlag('owl-night') !== nightOf) {
-        writeFlag('owl-night', nightOf);
-        timers.push(window.setTimeout(() => setOwl(pick(nightOwlLines)), 2500));
+      if (claimOwlNight(T.nightOwl, now)) timers.push(window.setTimeout(() => setOwl(pick(nightOwlLines)), 2500));
+      if (readFlag('patina-day') !== today && Math.random() < T.catChance) {
+        writeFlag('patina-day', today);
+        timers.push(window.setTimeout(() => setCat(pick(catLines)), 10000 + Math.random() * 20000));
       }
     };
     visit();
@@ -118,6 +118,7 @@ export function MascotLayer() {
       onEgg((e) => {
         if (e.kind === 'owl') setOwl(pick(nightOwlLines));
         if (e.kind === 'raccoon') setRaccoon(pick(raccoonLines));
+        if (e.kind === 'patina') setCat(pick(catLines));
         if (e.kind === 'peek') setPeek(dogs[Math.floor(Math.random() * dogs.length)]);
         if (e.kind === 'secret') {
           const dog = dogs.find((d) => d.id === e.dogId) ?? dogs[0];
@@ -128,6 +129,11 @@ export function MascotLayer() {
       }),
     [calm, eggsOn, show],
   );
+  useEffect(() => {
+    if (!cat) return;
+    const t = setTimeout(() => setCat(null), 5000);
+    return () => clearTimeout(t);
+  }, [cat]);
   useEffect(() => {
     if (!owl) return;
     const t = setTimeout(() => setOwl(null), 3500);
@@ -197,6 +203,23 @@ export function MascotLayer() {
             <div className="mb-1 ml-6 text-sm font-semibold text-ink-soft italic">{raccoon}</div>
             <RaccoonArt size={110} />
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Patina strolls in from the right, loafs for a moment, judges, leaves */}
+      <AnimatePresence>
+        {cat && (
+          <motion.button
+            className="pointer-events-auto absolute right-2 flex items-end gap-1"
+            style={{ bottom: `calc(${TAB_BAR} + 0.25rem)` }}
+            initial={calm ? { opacity: 0 } : { x: 260 }} animate={calm ? { opacity: 1 } : { x: 0 }} exit={calm ? { opacity: 0 } : { x: 280 }}
+            transition={calm ? { duration: 0.2 } : { type: 'tween', duration: 0.9, ease: 'easeOut' }}
+            onClick={() => setCat(null)}
+            aria-label={`Patina the cat: ${cat}`}
+          >
+            <Bubble>{cat}</Bubble>
+            <span className="shrink-0"><PatinaArt size={110} /></span>
+          </motion.button>
         )}
       </AnimatePresence>
 
