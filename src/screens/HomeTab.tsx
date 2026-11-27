@@ -173,6 +173,10 @@ export function HomeTab() {
           <p className="text-lg">🎯 <b>Set a goal?</b> Pick an exercise and tap “Set a goal”. We’ll plant daisies along the way.</p>
         </Card>
       )}
+      <button onClick={() => nav.push({ name: 'feedback' })}
+        className="mx-auto mt-6 flex min-h-12 items-center gap-2 rounded-2xl px-4 text-lg font-bold text-primary active:bg-primary-soft">
+        💌 Something to change? Send me a note
+      </button>
       <InstallGuideSheet open={installOpen} onClose={() => setInstallOpen(false)} />
     </div>
   );

@@ -216,11 +216,13 @@ export function Toggle({ checked, onChange, label, hint }: { checked: boolean; o
 }
 
 /** A row of big choice buttons (like a segmented control, but friendlier). */
-export function Choices<T extends string>({ value, options, onChange, label }: {
+export function Choices<T extends string>({ value, options, onChange, label, stack }: {
   value: T; options: Array<{ value: T; label: string }>; onChange: (v: T) => void; label: string;
+  /** One option per row, for longer labels. */
+  stack?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+    <div role="radiogroup" aria-label={label} className={`flex gap-2 ${stack ? "flex-col" : "flex-wrap"}`}>
       {options.map((o) => (
         <button key={o.value} role="radio" aria-checked={value === o.value} onClick={() => onChange(o.value)}
           className={`min-h-12 flex-1 rounded-2xl border-2 px-3 text-lg font-bold ${value === o.value ? 'border-primary bg-primary text-white' : 'border-primary/30 bg-card text-primary'}`}>

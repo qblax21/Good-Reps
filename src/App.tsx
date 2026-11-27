@@ -15,6 +15,7 @@ import { SettingsTab } from './screens/SettingsTab';
 import { WorkoutScreen } from './screens/WorkoutScreen';
 import { ExerciseDetail } from './screens/ExerciseDetail';
 import { HistoryScreen } from './screens/HistoryScreen';
+import { FeedbackScreen } from './screens/FeedbackScreen';
 import { Onboarding } from './screens/Onboarding';
 import { Daisy } from './theme/mascots/art';
 
@@ -83,6 +84,7 @@ export default function App() {
                   {r.name === 'workout' && <WorkoutScreen workoutId={r.workoutId} />}
                   {r.name === 'exercise' && <ExerciseDetail exerciseId={r.exerciseId} />}
                   {r.name === 'history' && <HistoryScreen />}
+                  {r.name === 'feedback' && <FeedbackScreen />}
                 </motion.div>
               ))}
             </AnimatePresence>

@@ -14,11 +14,13 @@ import { dogs } from '../theme/mascots/dogs';
 import { app } from '../theme/config';
 import { InstallGuideSheet } from './Onboarding';
 import { cheer } from '../mascot/bus';
+import { useNav } from '../nav';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export function SettingsTab() {
   const s = useSettings();
+  const nav = useNav();
   const workouts = useWorkouts() ?? [];
   const set = (patch: Partial<Settings>) => store.updateSettings(patch);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -124,6 +126,7 @@ export function SettingsTab() {
 
         <SectionTitle>Help</SectionTitle>
         <Card className="flex flex-col gap-2">
+          <Button onClick={() => nav.push({ name: 'feedback' })}>💌 Send me a note</Button>
           {!isStandalone() && <Button kind="secondary" onClick={() => setInstallOpen(true)}>📲 How to add to Home Screen</Button>}
           {s.demoMode ? (
             <Button kind="danger" onClick={() => store.clearDemo().then(() => toast('Demo data cleared'))}>Clear demo data</Button>

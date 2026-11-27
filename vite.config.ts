@@ -8,6 +8,8 @@ const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
   base,
+  // Shown in feedback notes so a report can be matched to the exact build.
+  define: { __APP_VERSION__: JSON.stringify(process.env.GITHUB_SHA?.slice(0, 7) ?? 'dev') },
   build: { chunkSizeWarningLimit: 900 }, // one bundle is fine: it is precached for offline use
   plugins: [
     react(),

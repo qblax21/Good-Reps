@@ -75,5 +75,17 @@ export const push = {
   subscribeEndpoint: '',
 };
 
+/**
+ * Where Mom's "Send a note" messages go. Fill in ONE of these for the easiest experience:
+ *   phone → Messages opens addressed to you, note filled in (e.g. '+15551234567')
+ *   email → Mail opens addressed to you
+ * Leave both empty and she picks Messages + you from the iPhone share sheet instead.
+ * Note: this repo is public, so anything typed here is visible on GitHub.
+ */
+export const feedback = {
+  phone: '',
+  email: '',
+};
+
 /** How often to nudge her to save a backup. */
 export const backupNudgeDays = 30;

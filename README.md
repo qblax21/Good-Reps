@@ -134,6 +134,15 @@ Web apps can’t schedule notifications by themselves, so there are three layers
    Without this, “Turn on notifications” still asks permission and shows a test notification, then
    points her to the Calendar option. It fails gracefully everywhere.
 
+## Feedback notes
+**Send me a note** (bottom of the home screen, and Settings → Help) lets her type a problem or an idea.
+It adds the app version, iOS version and a few settings at the bottom, then hands it to her iPhone:
+- `feedback.phone` set in `src/theme/config.ts` → Messages opens addressed to you, note filled in
+- `feedback.email` set → Mail opens instead
+- neither → the share sheet opens and she picks Messages and you
+
+Her draft is kept if she backs out. To get a note fixed, paste it into a Claude Code session on this repo.
+
 ## Progression rules (`src/config/progression.ts`)
 - **Library:** set up for an intermediate lifter (`src/data/exercises.ts`): barbell, dumbbell, machine and
   cable lifts grouped by body area, plus intermediate bodyweight moves (knee and full push-ups, chin-ups,

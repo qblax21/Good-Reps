@@ -8,7 +8,8 @@ export type Tab = 'home' | 'exercises' | 'progress' | 'settings';
 export type Route =
   | { name: 'workout'; workoutId: string }
   | { name: 'exercise'; exerciseId: string }
-  | { name: 'history' };
+  | { name: 'history' }
+  | { name: 'feedback' };
 
 export interface Nav {
   tab: Tab;
