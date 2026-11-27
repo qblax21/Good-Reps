@@ -56,11 +56,11 @@ export const mascotTiming = {
   /** How long a celebration pop-up stays before tucking itself away (ms). */
   popupVisibleMs: 3000,
   /** Chance a dog peeks up when she opens a screen (0–1), and min gap between peeks. */
-  peekChance: 0.12,
-  peekMinGapMs: 4 * 60 * 1000,
-  /** Chance the raccoon sneaks past when the app opens (at most once a day). */
-  raccoonChance: 0.08,
-  /** Night-owl hours (24h clock): workouts started at/after `from` or before `to`. */
+  peekChance: 0.2,
+  peekMinGapMs: 3 * 60 * 1000,
+  /** Chance the raccoon sneaks past when she opens the app (rolled once a day; at most one visit a day). */
+  raccoonChance: 0.3,
+  /** Night-owl hours (24h clock): the owl visits once a night when she opens the app at/after `from` or before `to`. */
   nightOwl: { from: 21, to: 4 },
   /** Taps on a mascot needed to trigger a sploot / zoomies. */
   secretTaps: 5,

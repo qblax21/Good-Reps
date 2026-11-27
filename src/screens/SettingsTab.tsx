@@ -13,7 +13,7 @@ import { DogArt } from '../theme/mascots/art';
 import { dogs } from '../theme/mascots/dogs';
 import { app } from '../theme/config';
 import { InstallGuideSheet } from './Onboarding';
-import { cheer } from '../mascot/bus';
+import { cheer, egg } from '../mascot/bus';
 import { useNav } from '../nav';
 import { StepsSettings } from '../components/StepsSettings';
 
@@ -102,6 +102,12 @@ export function SettingsTab() {
         <Card>
           <Toggle label="Calm mode" hint="Less bouncing and movement" checked={s.reduceMotion} onChange={(reduceMotion) => set({ reduceMotion })} />
           <Toggle label="Surprise visitors" hint="Dogs, a raccoon and an owl may appear now and then" checked={s.easterEggs} onChange={(easterEggs) => set({ easterEggs })} />
+          <p className="mt-3 text-base font-bold">Call a visitor</p>
+          <div className="mt-1 flex flex-wrap gap-2">
+            <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'raccoon' })}>🦝 Raccoon</Button>
+            <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'owl' })}>🦉 Owl</Button>
+            <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'peek' })}>🐶 Peek</Button>
+          </div>
         </Card>
 
         <SectionTitle>Meet the dogs</SectionTitle>

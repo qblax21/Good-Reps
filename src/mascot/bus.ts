@@ -34,7 +34,7 @@ export function onScreen(fn: (name: string) => void) {
 }
 
 /** Easter-egg triggers. */
-export type Egg = { kind: 'owl' } | { kind: 'raccoon' } | { kind: 'secret'; dogId: string };
+export type Egg = { kind: 'owl' } | { kind: 'raccoon' } | { kind: 'peek' } | { kind: 'secret'; dogId: string };
 const eggListeners = new Set<(e: Egg) => void>();
 export const egg = (e: Egg) => eggListeners.forEach((fn) => fn(e));
 export function onEgg(fn: (e: Egg) => void) {

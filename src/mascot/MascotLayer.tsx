@@ -18,6 +18,10 @@ let turn = 0;
 /** Alternate between the dogs for each moment. */
 export const nextDog = (): DogConfig => dogs[turn++ % dogs.length];
 
+/** Small per-device flags; storage can be unavailable (private mode), so never throw. */
+const readFlag = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+const writeFlag = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
+
 interface Popup { id: number; dog: DogConfig; pose: Pose; line: string }
 
 const TAB_BAR = 'calc(5.25rem + env(safe-area-inset-bottom))';
@@ -26,7 +30,8 @@ export function MascotLayer() {
   const settings = useSettings();
   const systemReduced = useReducedMotion();
   const calm = settings.reduceMotion || !!systemReduced;
-  const eggsOn = settings.easterEggs && !calm;
+  // Calm mode / iOS Reduce Motion only softens the animations; the Surprise visitors toggle turns them off.
+  const eggsOn = settings.easterEggs;
 
   const [queue, setQueue] = useState<Popup[]>([]);
   const [peek, setPeek] = useState<DogConfig | null>(null);
@@ -75,17 +80,36 @@ export function MascotLayer() {
     return () => clearTimeout(t);
   }, [peek]);
 
-  // The raccoon: rare, at most once a day, a little while after opening the app
+  // Visitors that may drop by when she opens the app or comes back to it (iPhone keeps the app
+  // running in the background, so "coming back" is the usual way in):
+  //   raccoon — at most once a day, a little while later
+  //   owl     — at night, at most once a night
   useEffect(() => {
     if (!eggsOn) return;
-    const today = dayKey(Date.now());
-    if (settings.lastRaccoonDay === today || Math.random() > T.raccoonChance) return;
-    const t = setTimeout(() => {
-      setRaccoon(pick(raccoonLines));
-      store.updateSettings({ lastRaccoonDay: today });
-    }, 8000 + Math.random() * 20000);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const timers: number[] = [];
+    const visit = async () => {
+      if (document.visibilityState !== 'visible') return;
+      const now = new Date();
+      const today = dayKey(now);
+      const s = await store.getSettings();
+      if (s.lastRaccoonDay !== today && Math.random() < T.raccoonChance) {
+        await store.updateSettings({ lastRaccoonDay: today });
+        timers.push(window.setTimeout(() => setRaccoon(pick(raccoonLines)), 6000 + Math.random() * 12000));
+      }
+      const h = now.getHours();
+      const night = h >= T.nightOwl.from || h < T.nightOwl.to;
+      const nightOf = dayKey(h < T.nightOwl.to ? now.getTime() - 86400000 : now); // after midnight counts as last night
+      if (night && readFlag('owl-night') !== nightOf) {
+        writeFlag('owl-night', nightOf);
+        timers.push(window.setTimeout(() => setOwl(pick(nightOwlLines)), 2500));
+      }
+    };
+    visit();
+    document.addEventListener('visibilitychange', visit);
+    return () => {
+      document.removeEventListener('visibilitychange', visit);
+      timers.forEach(clearTimeout);
+    };
   }, [eggsOn]);
 
   // Owl + secret tricks
@@ -93,7 +117,8 @@ export function MascotLayer() {
     () =>
       onEgg((e) => {
         if (e.kind === 'owl') setOwl(pick(nightOwlLines));
-        if (e.kind === 'raccoon' && eggsOn) setRaccoon(pick(raccoonLines));
+        if (e.kind === 'raccoon') setRaccoon(pick(raccoonLines));
+        if (e.kind === 'peek') setPeek(dogs[Math.floor(Math.random() * dogs.length)]);
         if (e.kind === 'secret') {
           const dog = dogs.find((d) => d.id === e.dogId) ?? dogs[0];
           const line = pick(dog.lines.secret);
