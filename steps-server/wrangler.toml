@@ -1,0 +1,12 @@
+# Cloudflare Worker config for the Good Reps steps server.
+# Deploy from this folder:  npx wrangler deploy
+# The key is a secret (not in this file):  npx wrangler secret put STEPS_KEY
+name = "good-reps-steps"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+preview_urls = false
+
+[[kv_namespaces]]
+binding = "STEPS"
+id = "09a8b5368c654af1ab0e8abd7eb0c923"

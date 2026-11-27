@@ -27,6 +27,12 @@ Run this in PowerShell and copy the result. That's your **key**: a random 32-cha
 
 ## Part 2: The server (10 minutes, on your PC)
 
+> **Already done for this repo** (2026-11-27): the worker is live at
+> `https://good-reps-steps.qblax21.workers.dev` with its storage and key. To update the code later,
+> run `npx wrangler deploy` in this folder (`wrangler.toml` has the settings). To change the key,
+> run `npx wrangler secret put STEPS_KEY`, then paste the new link in the app and the Shortcut.
+> The dashboard steps below are for setting it up from scratch.
+
 1. Go to <https://dash.cloudflare.com/sign-up> and make a free account. Verify your email.
 2. **Make the storage.** In the left menu open **Storage & databases → Workers KV**, then **Create**
    (or *Create namespace*). Name it `good-reps-steps` and create it.
