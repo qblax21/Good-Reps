@@ -15,6 +15,7 @@ import { app } from '../theme/config';
 import { InstallGuideSheet } from './Onboarding';
 import { cheer } from '../mascot/bus';
 import { useNav } from '../nav';
+import { StepsSettings } from '../components/StepsSettings';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -113,6 +114,9 @@ export function SettingsTab() {
             </Card>
           ))}
         </div>
+
+        <SectionTitle>Steps from Apple Health</SectionTitle>
+        <StepsSettings />
 
         <SectionTitle>Keep my progress safe</SectionTitle>
         <Card>

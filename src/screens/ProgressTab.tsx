@@ -1,6 +1,8 @@
 /** Progress: streak, calendar, per-exercise summaries, records, and workout history. */
 import { useMemo } from 'react';
-import { useAllSets, useExercises, useSettings, useWorkouts } from '../hooks/useStore';
+import { useAllSets, useExercises, useSettings, useSteps, useWorkouts } from '../hooks/useStore';
+import { LineChart } from '../components/LineChart';
+import { lastNDays } from '../components/StepsCard';
 import { useNav } from '../nav';
 import { Card, Header, SectionTitle } from '../components/ui';
 import { MonthCalendar } from '../components/MonthCalendar';
@@ -12,6 +14,10 @@ import { fmtMetric, relDay } from '../logic/format';
 export function ProgressTab() {
   const nav = useNav();
   const settings = useSettings();
+  const steps = useSteps() ?? {};
+  const stepPoints = lastNDays(30)
+    .map((d) => ({ x: new Date(`${d}T12:00:00`).getTime(), y: steps[d] }))
+    .filter((p): p is { x: number; y: number } => p.y !== undefined);
   const workouts = useWorkouts() ?? [];
   const sets = useAllSets() ?? [];
   const exercises = useExercises() ?? [];
@@ -46,6 +52,13 @@ export function ProgressTab() {
             </Card>
           ))}
         </div>
+
+        {settings.stepsLink && stepPoints.length > 0 && (
+          <>
+            <SectionTitle>Steps, last 30 days</SectionTitle>
+            <Card><LineChart points={stepPoints} format={(v) => Math.round(v).toLocaleString()} label="Daily steps, last 30 days" /></Card>
+          </>
+        )}
 
         <SectionTitle>Calendar</SectionTitle>
         <Card><MonthCalendar workoutDays={days} plannedDays={settings.plannedDays} /></Card>

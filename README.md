@@ -134,6 +134,12 @@ Web apps can’t schedule notifications by themselves, so there are three layers
    Without this, “Turn on notifications” still asks permission and shows a test notification, then
    points her to the Calendar option. It fails gracefully everywhere.
 
+## Steps from Apple Health
+Web apps can't read Health, so an iPhone Shortcut sends her daily step totals to a tiny free
+Cloudflare Worker (`steps-server/worker.js`) and the app fetches them when it opens. Steps then
+show on Today (with a daily goal and daisies) and as a 30-day chart in Progress.
+Full setup: [`steps-server/README.md`](steps-server/README.md).
+
 ## Feedback notes
 **Send me a note** (bottom of the home screen, and Settings → Help) lets her type a problem or an idea.
 It adds the app version, iOS version and a few settings at the bottom, then hands it to her iPhone:

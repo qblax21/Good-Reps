@@ -5,7 +5,7 @@
  * Live updates: `subscribe(fn)` fires after any write, and the hooks in src/hooks/useStore.ts
  * re-query when that happens.
  */
-import type { Exercise, Goal, Settings, Workout, WorkoutSet, Backup } from './types';
+import type { Exercise, Goal, Settings, Workout, WorkoutSet, Backup, StepDays } from './types';
 
 export interface Store {
   // Exercises
@@ -34,6 +34,10 @@ export interface Store {
   // Settings
   getSettings(): Promise<Settings>;
   updateSettings(patch: Partial<Settings>): Promise<Settings>;
+
+  // Steps (from Apple Health, via the steps server)
+  getSteps(): Promise<StepDays>;
+  mergeSteps(days: StepDays): Promise<void>;
 
   // Bulk
   exportAll(): Promise<Backup>;

@@ -15,6 +15,7 @@ import { SettingsTab } from './screens/SettingsTab';
 import { WorkoutScreen } from './screens/WorkoutScreen';
 import { ExerciseDetail } from './screens/ExerciseDetail';
 import { HistoryScreen } from './screens/HistoryScreen';
+import { syncSteps } from './lib/steps';
 import { FeedbackScreen } from './screens/FeedbackScreen';
 import { Onboarding } from './screens/Onboarding';
 import { Daisy } from './theme/mascots/art';
@@ -33,6 +34,13 @@ export default function App() {
   const [stack, setStack] = useState<Route[]>([]);
 
   useEffect(() => applyTextSize(settings.textSize), [settings.textSize]);
+  // Pull the latest Apple Health steps when the app opens or comes back to the front.
+  useEffect(() => {
+    syncSteps();
+    const onShow = () => document.visibilityState === 'visible' && syncSteps();
+    document.addEventListener('visibilitychange', onShow);
+    return () => document.removeEventListener('visibilitychange', onShow);
+  }, [settings.stepsLink]);
   const top = stack[stack.length - 1];
   useEffect(() => screenChanged(top?.name ?? tab), [tab, top]);
 

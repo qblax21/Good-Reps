@@ -1,7 +1,7 @@
 /** IndexedDB implementation of the Store interface, using Dexie. */
 import Dexie, { type Table } from 'dexie';
 import type { Store } from './storage';
-import type { Backup, Exercise, Goal, Settings, Workout, WorkoutSet } from './types';
+import type { Backup, Exercise, Goal, Settings, StepDays, Workout, WorkoutSet } from './types';
 import { defaultSettings } from './defaults';
 import { seedExercises } from './exercises';
 
@@ -107,6 +107,14 @@ export function createDexieStore(dbName?: string): Store {
         await db.kv.put({ key: 'settings', value: next });
         return next;
       }),
+
+    getSteps: async () => ((await db.kv.get('steps'))?.value as StepDays | undefined) ?? {},
+    mergeSteps: async (days) => {
+      const old = ((await db.kv.get('steps'))?.value as StepDays | undefined) ?? {};
+      const next = { ...old, ...days };
+      // Only notify screens when something actually changed (sync runs every time the app opens).
+      if (Object.keys(days).some((d) => old[d] !== days[d])) await write(() => db.kv.put({ key: 'steps', value: next }).then(() => {}));
+    },
 
     exportAll: async (): Promise<Backup> => ({
       app: 'daisy-strong',

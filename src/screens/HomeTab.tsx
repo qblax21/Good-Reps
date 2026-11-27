@@ -19,6 +19,7 @@ import { exportBackup } from '../data/backup';
 import { mascotTapped } from '../mascot/bus';
 import { isIOS, isStandalone } from '../lib/platform';
 import { InstallGuideSheet } from './Onboarding';
+import { StepsCard } from '../components/StepsCard';
 
 const DAY = 86400000;
 
@@ -134,6 +135,8 @@ export function HomeTab() {
           })}
         </div>
       </Card>
+
+      <StepsCard />
 
       {needsBackup && (
         <Card className="mt-4 border-2 !border-sun bg-sun-soft">

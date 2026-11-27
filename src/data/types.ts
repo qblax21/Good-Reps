@@ -103,7 +103,16 @@ export interface Settings {
   celebratedStreak: number;
   lastRaccoonDay: string | null;
   firstOpenedAt: number;
+  /** Steps server link incl. ?key=… (see steps-server/README.md), or null when not connected. */
+  stepsLink: string | null;
+  /** Daily step goal; days that reach it get a daisy. */
+  stepGoal: number;
+  /** When the steps server last received data from her phone. */
+  stepsUpdatedAt: number | null;
 }
+
+/** Daily step totals from Apple Health, keyed by local date 'YYYY-MM-DD'. */
+export type StepDays = Record<string, number>;
 
 export interface Backup {
   app: 'daisy-strong';

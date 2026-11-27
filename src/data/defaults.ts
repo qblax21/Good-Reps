@@ -18,5 +18,8 @@ export function defaultSettings(): Settings {
     celebratedStreak: 0,
     lastRaccoonDay: null,
     firstOpenedAt: Date.now(),
+    stepsLink: null,
+    stepGoal: 7000,
+    stepsUpdatedAt: null,
   };
 }

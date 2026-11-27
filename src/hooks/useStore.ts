@@ -30,3 +30,4 @@ export const useExercises = () => useQuery(() => store.listExercises());
 export const useWorkouts = () => useQuery(() => store.listWorkouts());
 export const useAllSets = () => useQuery(() => store.allSets());
 export const useGoals = () => useQuery(() => store.listGoals());
+export const useSteps = () => useQuery(() => store.getSteps());
