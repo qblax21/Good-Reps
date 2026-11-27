@@ -1,0 +1,38 @@
+{
+  "name": "daisy-strong",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A cheerful, offline-first workout tracker PWA (made as a gift).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.sw.json && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "icons": "node scripts/generate-icons.mjs",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.sw.json"
+  },
+  "dependencies": {
+    "@fontsource-variable/nunito": "^5.3.0",
+    "dexie": "^4.4.7",
+    "framer-motion": "^14.14.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "workbox-core": "^7.4.1",
+    "workbox-precaching": "^7.4.1",
+    "workbox-routing": "^7.4.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.3",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "fake-indexeddb": "^6.2.8",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.2"
+  }
+}

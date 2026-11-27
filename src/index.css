@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/nunito';
+
+/* Colour tokens. Real values come from src/theme/config.ts at runtime (see theme/apply.ts);
+   these are fallbacks so the first paint already looks right. */
+@theme {
+  --color-primary: #2b6e46;
+  --color-primary-dark: #1e5233;
+  --color-primary-soft: #dcefd9;
+  --color-leaf: #4e9a62;
+  --color-cream: #fff9ec;
+  --color-card: #ffffff;
+  --color-sun: #f6d56b;
+  --color-sun-soft: #fff1bf;
+  --color-ink: #1f3326;
+  --color-ink-soft: #4a5c4f;
+  --color-danger: #a93a2b;
+  /* SF Pro Rounded on iPhone; Nunito (bundled, works offline) everywhere else. */
+  --font-sans: ui-rounded, 'SF Pro Rounded', 'Nunito Variable', system-ui, sans-serif;
+}
+
+/* ── Text size ── (everything is in rem, so this scales the whole app) */
+html { font-size: 112.5%; }
+html[data-text='normal'] { font-size: 100%; }
+html[data-text='large'] { font-size: 112.5%; }
+html[data-text='xlarge'] { font-size: 131.25%; }
+/* "Match my iPhone": follow iOS Dynamic Type (Settings → Display → Text Size). */
+html[data-text='iphone'] { font: -apple-system-body; }
+html[data-text='iphone'] body { font-family: var(--font-sans); }
+
+/* ── iOS app-shell behaviour ── */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* the page itself never scrolls → no rubber-band of the whole app */
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* no double-tap zoom delay */
+}
+/* The one scrolling area inside each screen. */
+.scroll-area {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+button,
+[role='button'] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  cursor: pointer;
+}
+/* Inputs ≥ 16px so iOS never auto-zooms when focusing them. */
+input,
+select,
+textarea {
+  font-size: max(1rem, 16px);
+  font-family: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
+/* Safe areas (notch / Dynamic Island / home indicator) */
+.pt-safe { padding-top: max(env(safe-area-inset-top), 0.75rem); }
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+.px-safe {
+  padding-left: max(env(safe-area-inset-left), 1rem);
+  padding-right: max(env(safe-area-inset-right), 1rem);
+}
+
+/* Little decorative daisy pattern for backgrounds */
+.daisy-dots {
+  background-image: radial-gradient(circle at 12px 12px, rgb(246 213 107 / 0.35) 3px, transparent 4px);
+  background-size: 48px 48px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
