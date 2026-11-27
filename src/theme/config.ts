@@ -63,6 +63,9 @@ export const mascotTiming = {
   /** Chance Patina the cat drops by when she opens the app (rolled once a day), and after a finished workout. */
   catChance: 0.25,
   catAfterWorkoutChance: 0.15,
+  /** The wolf: rare. Chance he drops by when she opens the app (rolled once a day), and after she reaches a goal. */
+  wolfChance: 0.08,
+  wolfAfterGoalChance: 0.35,
   /** Night-owl hours (24h clock): the owl visits once a night when she opens the app at/after `from` or before `to`. */
   nightOwl: { from: 21, to: 4 },
   /** Taps on a mascot needed to trigger a sploot / zoomies. */

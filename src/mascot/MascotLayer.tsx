@@ -6,7 +6,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { dogs, otherDog, type DogConfig, type Pose } from '../theme/mascots/dogs';
-import { DogArt, OwlArt, PatinaArt, RaccoonArt } from '../theme/mascots/art';
+import { DogArt, OwlArt, PatinaArt, RaccoonArt, WolfArt } from '../theme/mascots/art';
 import { mascotTiming as T, person } from '../theme/config';
 import { showLines, sometimes } from '../theme/catchphrases';
 import { catFinishLines, catLines, fill, nightOwlLines, pick, raccoonVisit } from '../theme/messages';
@@ -38,6 +38,8 @@ export function MascotLayer() {
   const [raccoon, setRaccoon] = useState<{ line: string; count: number } | null>(null);
   const [owl, setOwl] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
+  // The wolf walks up, raises a paw, then heads off into the distance.
+  const [wolf, setWolf] = useState<'walk' | 'salute' | 'away' | null>(null);
   const [trick, setTrick] = useState<{ dog: DogConfig; kind: 'sploot' | 'zoomies'; line: string } | null>(null);
   const lastPeek = useRef(0);
   const settingsRef = useRef(settings);
@@ -55,6 +57,9 @@ export function MascotLayer() {
         const vars = { name: person.name, dog: dog.name, other: otherDog(dog).name, ...c.vars };
         const pose: Pose = c.event === 'hello' ? 'popup' : 'celebrate';
         show(dog, pose, fill(pick(sometimes(dog.lines[c.event], showFor(dog)[c.event])), vars));
+        // Reaching a goal sometimes earns a salute from the wolf.
+        if (c.event === 'goal' && settingsRef.current.easterEggs && Math.random() < T.wolfAfterGoalChance)
+          setTimeout(() => setWolf('walk'), T.popupVisibleMs + 1200);
         // Now and then Patina wanders in after the dogs are done celebrating.
         if (c.event === 'finish' && settingsRef.current.easterEggs && Math.random() < T.catAfterWorkoutChance)
           setTimeout(() => setCat(pick(sometimes(catFinishLines, showLines.patina.afterWorkout))), T.popupVisibleMs + 800);
@@ -103,6 +108,10 @@ export function MascotLayer() {
         timers.push(window.setTimeout(() => setRaccoon(raccoonVisit()), 6000 + Math.random() * 12000));
       }
       if (claimOwlNight(T.nightOwl, now)) timers.push(window.setTimeout(() => setOwl(pick(sometimes(nightOwlLines, showLines.owl))), 2500));
+      if (readFlag('wolf-day') !== today && Math.random() < T.wolfChance) {
+        writeFlag('wolf-day', today);
+        timers.push(window.setTimeout(() => setWolf('walk'), 15000 + Math.random() * 20000));
+      }
       if (readFlag('patina-day') !== today && Math.random() < T.catChance) {
         writeFlag('patina-day', today);
         timers.push(window.setTimeout(() => setCat(pick(sometimes(catLines, showLines.patina.visit))), 10000 + Math.random() * 20000));
@@ -122,6 +131,7 @@ export function MascotLayer() {
       onEgg((e) => {
         if (e.kind === 'owl') setOwl(pick(sometimes(nightOwlLines, showLines.owl)));
         if (e.kind === 'raccoon') setRaccoon(raccoonVisit());
+        if (e.kind === 'wolf') setWolf('walk');
         if (e.kind === 'patina') setCat(pick(sometimes(catLines, showLines.patina.visit)));
         if (e.kind === 'peek') setPeek(dogs[Math.floor(Math.random() * dogs.length)]);
         if (e.kind === 'secret') {
@@ -133,6 +143,13 @@ export function MascotLayer() {
       }),
     [calm, eggsOn, show],
   );
+  useEffect(() => {
+    if (!wolf) return;
+    const next = { walk: 'salute', salute: 'away', away: null } as const;
+    const wait = { walk: calm ? 500 : 2300, salute: 2400, away: calm ? 400 : 1700 }[wolf];
+    const t = setTimeout(() => setWolf(next[wolf]), wait);
+    return () => clearTimeout(t);
+  }, [wolf, calm]);
   useEffect(() => {
     if (!cat) return;
     const t = setTimeout(() => setCat(null), Math.max(5000, cat.length * 60));
@@ -236,6 +253,27 @@ export function MascotLayer() {
             <Bubble>{cat}</Bubble>
             <span className="shrink-0"><PatinaArt size={110} /></span>
           </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* The wolf: walks in from the side, raises a paw to her, then walks off into the distance */}
+      <AnimatePresence>
+        {wolf && (
+          <motion.div
+            key="wolf"
+            className="absolute left-1/2"
+            style={{ bottom: `calc(${TAB_BAR} + 0.5rem)`, marginLeft: -88, originY: 1 }}
+            initial={calm ? { opacity: 0 } : { x: -(window.innerWidth / 2 + 200), opacity: 1 }}
+            animate={wolf === 'away'
+              ? calm ? { opacity: 0 } : { x: 0, y: -60, scale: 0.3, opacity: 0 }
+              : { x: 0, y: 0, scale: 1, opacity: 1 }}
+            transition={wolf === 'walk' && !calm ? { duration: 2.2, ease: 'linear' } : wolf === 'away' ? { duration: calm ? 0.3 : 1.6, ease: 'easeIn' } : { duration: 0.3 }}
+            role="img" aria-label="A wolf walks up, raises a paw to you, and heads off into the distance"
+          >
+            <motion.div animate={wolf === 'walk' && !calm ? { y: [0, -3, 0] } : { y: 0 }} transition={{ repeat: wolf === 'walk' ? Infinity : 0, duration: 0.35 }}>
+              <WolfArt size={176} raised={wolf === 'salute'} />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

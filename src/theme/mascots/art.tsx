@@ -285,6 +285,52 @@ export function PatinaArt({ size = 120 }: { size?: number }) {
   );
 }
 
+/**
+ * A shaggy black wolf, side-on with his head turned toward her, in the same flat style as the
+ * others. `raised` lifts one front paw straight up in a quiet salute.
+ */
+export function WolfArt({ size = 160, raised = false }: { size?: number; raised?: boolean }) {
+  const K = '#1E1E23', B = '#34343C', H = '#4A4A54';
+  return (
+    <svg viewBox="0 0 220 200" width={size} height={size * (200 / 220)} aria-hidden="true">
+      <ellipse cx={104} cy={190} rx={74} ry={6} fill="#000" opacity={0.12} />
+      {/* bushy tail */}
+      <path d="M66 110 L40 114 L12 128 L28 118 L6 116 L30 108 L14 98 L42 102 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      {/* hind legs with shaggy thighs */}
+      <path d="M66 124 L56 186 L65 186 L78 130 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      <path d="M84 126 L84 186 L93 186 L96 128 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      <path d={zig(78, 120, 20, 16, 8, 0.28, 31)} fill={K} />
+      {/* front standing leg */}
+      <path d="M126 126 L126 186 L135 186 L140 128 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      {/* shaggy body */}
+      <path d={zig(105, 113, 50, 19, 24, 0.17, 4)} fill={K} />
+      <path d="M78 104 l10 -4 M96 100 l10 -3 M112 102 l9 -2 M88 122 l10 1 M106 124 l10 0" stroke={H} strokeWidth={2} strokeLinecap="round" />
+      {/* the other front leg: down while walking, straight up in a salute */}
+      {raised ? (
+        <g>
+          <path d="M146 116 L158 100 L184 56 L194 24 L206 28 L198 60 L168 118 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+          <path d={zig(180, 72, 8, 20, 7, 0.35, 41)} fill={K} transform="rotate(28 180 72)" />
+          <circle cx={200} cy={20} r={9} fill={K} />
+        </g>
+      ) : (
+        <path d="M144 120 L146 186 L155 186 L158 118 Z" fill={K} stroke={K} strokeWidth={3} strokeLinejoin="round" />
+      )}
+      {/* neck ruff */}
+      <path d={zig(146, 100, 22, 22, 12, 0.26, 7)} fill={K} />
+      {/* head turned toward her: pointed ears, pale eyes */}
+      <path d="M133 72 L130 50 L144 64 Z M157 64 L170 49 L166 72 Z" fill={K} stroke={K} strokeWidth={4} strokeLinejoin="round" />
+      <path d="M134 66 L162 64 L168 80 L160 98 L148 104 L136 98 L130 82 Z" fill={K} stroke={K} strokeWidth={6} strokeLinejoin="round" />
+      <path d="M134 66 L162 64 L168 80 L160 98 L148 104 Z" fill={B} opacity={0.35} />
+      <path d="M142 86 L154 86 L152 99 L144 99 Z" fill={B} stroke={B} strokeWidth={3} strokeLinejoin="round" />
+      <ellipse cx={140.5} cy={79} rx={3.4} ry={2.6} fill="#E9E6DA" />
+      <ellipse cx={156.5} cy={78} rx={3.4} ry={2.6} fill="#E9E6DA" />
+      <circle cx={141} cy={79} r={1.1} fill={K} />
+      <circle cx={157} cy={78} r={1.1} fill={K} />
+      <ellipse cx={148} cy={96} rx={3.4} ry={2.4} fill="#0A0A0C" />
+    </svg>
+  );
+}
+
 /** Side-on raccoon tiptoeing (facing right). */
 export function RaccoonArt({ size = 120 }: { size?: number }) {
   return (
