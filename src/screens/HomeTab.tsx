@@ -20,6 +20,7 @@ import { mascotTapped } from '../mascot/bus';
 import { isIOS, isStandalone } from '../lib/platform';
 import { InstallGuideSheet } from './Onboarding';
 import { StepsCard } from '../components/StepsCard';
+import { seededRandom, sprinkle } from '../theme/catchphrases';
 
 const DAY = 86400000;
 
@@ -50,13 +51,15 @@ export function HomeTab() {
   const away = lastAt && Date.now() - lastAt > 10 * DAY;
   const streak = weekStreak(workouts);
 
-  const line = doneToday
+  const baseLine = doneToday
     ? 'You moved today. Wonderful! 🌼'
     : away
       ? M.fill(M.pickForDay(M.welcomeBack), { name: person.name })
       : plannedToday
         ? M.fill(M.pickForDay(M.plannedDayLines), { dog: dog.name, name: person.name })
         : M.pickForDay(settings.plannedDays.length ? M.restDayLines : M.dailyLines);
+  // Same catchphrase (or none) all day, so the line doesn't change every time the screen redraws.
+  const line = sprinkle(baseLine, 'app', person.name, seededRandom(Number(today.replace(/-/g, ''))));
 
   const needsBackup =
     !settings.demoMode && finished.length >= 3 &&

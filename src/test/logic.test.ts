@@ -148,3 +148,33 @@ describe('raccoons from next door', async () => {
     expect(band.line).toMatch(/Amby, Stu and Cavs/);
   });
 });
+
+describe('show catchphrases', async () => {
+  const { sprinkle, pickCatchphrase, catchphrases, seededRandom } = await import('../theme/catchphrases');
+  const showOf = (text: string) => catchphrases.find((c) => c.text === text)!.show;
+
+  it('adds one about 1 time in 5, never every time', () => {
+    const rand = seededRandom(42);
+    let added = 0;
+    for (let i = 0; i < 5000; i++) if (sprinkle('Hi.', 'eddie', 'Mom', rand) !== 'Hi.') added++;
+    expect(added / 5000).toBeGreaterThan(0.17);
+    expect(added / 5000).toBeLessThan(0.23);
+  });
+
+  it('follows the ranking: Psych > Bones > Always Sunny > Parks and Rec', () => {
+    const rand = seededRandom(7);
+    const n: Record<string, number> = {};
+    for (let i = 0; i < 20000; i++) { const s = showOf(pickCatchphrase('eddie', rand)); n[s] = (n[s] ?? 0) + 1; }
+    expect(n['Psych']).toBeGreaterThan(n['Bones']);
+    expect(n['Bones']).toBeGreaterThan(n['Always Sunny']);
+    expect(n['Always Sunny']).toBeGreaterThan(n['Parks and Rec']);
+  });
+
+  it('keeps character-specific lines with their character', () => {
+    const rand = seededRandom(3);
+    for (let i = 0; i < 2000; i++) {
+      expect(pickCatchphrase('eddie', rand)).not.toMatch(/bird law|bacon|Rum ham/);
+    }
+    expect(sprinkle('Hoo.', 'owl', 'Mom', () => 0, 1)).not.toContain('{name}');
+  });
+});
