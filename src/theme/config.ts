@@ -10,7 +10,7 @@ export const person = {
   /** Her real name, for the welcome screen. */
   realName: 'Teri',
   /** Who the gift is from — shown on the welcome screen. Leave '' to hide. */
-  giftFrom: 'Made just for Teri, with love',
+  giftFrom: 'Proud of you, Mom. You’ve got this!',
 };
 
 export const app = {
