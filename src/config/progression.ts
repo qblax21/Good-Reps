@@ -1,6 +1,6 @@
 /**
  * ✿ PROGRESSION RULES ✿
- * Conservative "double progression" tuned for an older beginner. Tweak numbers here only —
+ * Steady "double progression" for an intermediate lifter. Tweak numbers here only —
  * the logic in src/logic/progression.ts reads everything from this file.
  *
  * Weights:  work in a rep range (e.g. 8–12). Add a rep each session; once EVERY set hits the

@@ -16,7 +16,7 @@ export async function seedDemo(store: Store): Promise<void> {
   const u: Units = { weightUnit: settings.weightUnit, distanceUnit: settings.distanceUnit };
   const all = await store.listExercises();
   const get = (id: string) => all.find((e) => e.id === id)!;
-  const plan: Exercise[] = ['goblet-squat', 'db-curl', 'db-row', 'sit-to-stand', 'walk', 'wall-pushup'].map(get).filter(Boolean);
+  const plan: Exercise[] = ['back-squat', 'bench-press', 'rdl', 'lat-pulldown', 'walk', 'db-press'].map(get).filter(Boolean);
 
   // Star the demo exercises so "favourites first" is visible.
   for (const e of plan) await store.putExercise({ ...e, favorite: true });
@@ -54,14 +54,14 @@ export async function seedDemo(store: Store): Promise<void> {
 
   // A few goals, with early milestones already "bloomed".
   const goals: Array<[string, number, number | undefined]> = [
-    ['goblet-squat', 30, 10],
-    ['walk', 2, undefined],
-    ['sit-to-stand', 15, undefined],
+    ['back-squat', 135, 5],
+    ['bench-press', 95, 6],
+    ['walk', 3, undefined],
   ];
   for (const [id, target, targetReps] of goals) {
     const ex = get(id);
     const metric = ex.kind === 'weight' ? 'weight' : ex.kind === 'reps' ? 'reps' : 'distance';
-    const startVal = metric === 'weight' ? 5 : metric === 'reps' ? 8 : 0.5;
+    const startVal = metric === 'weight' ? (ex.startWeight ?? 5) : metric === 'reps' ? ex.repMin : 0.5;
     const milestones = buildMilestones(startVal, target, metricStep(ex, metric, u));
     const g: Goal = {
       id: uid(), exerciseId: id, metric, start: startVal, target, targetReps, milestones, celebrated: [],

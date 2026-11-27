@@ -33,11 +33,16 @@ export const stepFor = (ex: Exercise, u: Units) => ex.weightStep || P.weight.fal
 
 /** What she should aim for the very first time (no history). */
 export function firstTarget(ex: Exercise, u: Units): Target {
-  if (ex.kind === 'weight') return { sets: ex.sets, weight: P.weight.startWeight[u.weightUnit], reps: ex.repMin, why: 'start' };
+  if (ex.kind === 'weight') {
+    const guess = ex.startWeight === undefined
+      ? P.weight.startWeight[u.weightUnit]
+      : u.weightUnit === 'kg' ? roundToStep(ex.startWeight / 2.2046, stepFor(ex, u), 'near') : ex.startWeight;
+    return { sets: ex.sets, weight: guess, reps: ex.repMin, why: 'start' };
+  }
   if (ex.kind === 'reps') return { sets: ex.sets, reps: ex.repMin, why: 'start' };
   return ex.cardioFocus === 'distance'
     ? { sets: 1, duration: P.cardio.startSeconds, distance: P.cardio.startDistance[u.distanceUnit], why: 'start' }
-    : { sets: 1, duration: ex.category === 'bodyweight' ? 20 : P.cardio.startSeconds, why: 'start' };
+    : { sets: 1, duration: ex.category === 'bodyweight' ? 30 : P.cardio.startSeconds, why: 'start' };
 }
 
 /** Did this session meet the target? */
@@ -125,12 +130,12 @@ export function suggestNext(ex: Exercise, sets: WorkoutSet[], u: Units, excludeW
 }
 
 export const whyText: Record<Target['why'], string> = {
-  start: 'A gentle place to start. Adjust if it feels too easy or too hard.',
+  start: 'A starting guess. Change it to what you usually do and I’ll take it from there.',
   'add-rep': 'You did great last time — one more rep!',
   'add-weight': 'You hit the top of your range. Time for a tiny bit more weight!',
   repeat: 'Let’s try the same as last time. No rush.',
   ease: 'Taking it a little easier this time — that’s smart training.',
-  top: 'You’re at the top of the range! Keep it up, or try a harder version.',
+  top: 'Top of the range! Add a little weight or try a harder version.',
   'add-time': 'A little longer than last time.',
   'add-distance': 'A little farther than last time.',
 };

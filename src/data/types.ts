@@ -7,6 +7,8 @@ export type ExerciseKind =
   | 'cardio'; // time and/or distance (e.g. walking)
 
 export type Category = 'strength' | 'bodyweight' | 'cardio';
+/** Body area for strength lifts, used to group the exercise list. */
+export type MuscleGroup = 'legs' | 'push' | 'pull' | 'arms';
 
 export interface Exercise {
   id: string;
@@ -22,6 +24,10 @@ export interface Exercise {
   sets: number;
   /** Smallest sensible weight jump, in the user's weight unit. */
   weightStep: number;
+  /** Strength lifts: which body area, for grouping the list. */
+  group?: MuscleGroup;
+  /** First-time weight guess in lb, used until she logs the exercise. */
+  startWeight?: number;
   /** For cardio: which number matters most. */
   cardioFocus?: 'time' | 'distance';
   favorite: boolean;

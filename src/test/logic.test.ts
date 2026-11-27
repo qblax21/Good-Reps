@@ -2,14 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { seedExercises } from '../data/exercises';
 import type { WorkoutSet } from '../data/types';
 import { sessionsFor } from '../logic/history';
-import { suggestFromSessions } from '../logic/progression';
+import { firstTarget, suggestFromSessions } from '../logic/progression';
+import Dexie from 'dexie';
 import { buildMilestones, currentValue } from '../logic/goals';
 import { weekStreak, prsInWorkout } from '../logic/stats';
 import { createDexieStore } from '../data/dexieStore';
 
 const u = { weightUnit: 'lb' as const, distanceUnit: 'mi' as const };
 const ex = (id: string) => seedExercises().find((e) => e.id === id)!;
-const curl = ex('db-curl'); // 8–12 reps, 2.5 lb step
+// The rules are what's under test, so pin the numbers rather than rely on library tweaks.
+const curl = { ...ex('db-curl'), repMin: 8, repMax: 12, weightStep: 2.5 };
 
 let n = 0;
 function session(day: number, sets: Array<Partial<WorkoutSet>>, exerciseId = curl.id): WorkoutSet[] {
@@ -103,5 +105,33 @@ describe('dexie store', () => {
     expect(await s.allSets()).toEqual([]);
     await s.importAll(JSON.parse(JSON.stringify(backup)));
     expect((await s.allSets()).length).toBe(1);
+  });
+});
+
+describe('intermediate library', () => {
+  it('starts lifts at a realistic first-time weight', () => {
+    expect(firstTarget(ex('back-squat'), u)).toMatchObject({ weight: 95, reps: 6, sets: 3, why: 'start' });
+    expect(firstTarget(ex('back-squat'), { ...u, weightUnit: 'kg' }).weight).toBe(45);
+  });
+
+  it('upgrades an older install: adds new lifts, hides retired ones, keeps favourites and history', async () => {
+    const old = new Dexie('upgrade-test');
+    old.version(1).stores({ exercises: 'id, name, favorite, archived', workouts: 'id, startedAt, endedAt', sets: 'id, workoutId, exerciseId, at', goals: 'id, exerciseId', kv: 'key' });
+    await old.table('exercises').bulkPut([
+      { ...ex('db-curl'), repMin: 8, repMax: 12, sets: 2, favorite: true },
+      { ...ex('db-curl'), id: 'sit-to-stand', name: 'Sit-to-Stand', kind: 'reps', category: 'bodyweight', custom: false },
+      { ...ex('db-curl'), id: 'my-own', name: 'My Own Lift', custom: true },
+    ]);
+    await old.table('sets').put({ id: 'h', workoutId: 'w', exerciseId: 'sit-to-stand', order: 0, at: 1, reps: 10, done: true });
+    old.close();
+
+    const store = createDexieStore('upgrade-test');
+    const list = await store.listExercises();
+    const byId = (id: string) => list.find((e) => e.id === id);
+    expect(byId('back-squat')).toBeTruthy();
+    expect(byId('db-curl')).toMatchObject({ favorite: true, sets: 3 });
+    expect(byId('sit-to-stand')).toMatchObject({ archived: true });
+    expect(byId('my-own')).toMatchObject({ archived: false, custom: true });
+    expect(await store.setsForExercise('sit-to-stand')).toHaveLength(1);
   });
 });

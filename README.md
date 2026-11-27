@@ -135,9 +135,13 @@ Web apps can’t schedule notifications by themselves, so there are three layers
    points her to the Calendar option. It fails gracefully everywhere.
 
 ## Progression rules (`src/config/progression.ts`)
-- **Weights:** double progression in each exercise’s rep range (default 8–12). Hit the top of the range
-  on every set → add the smallest step (2.5 lb for dumbbells, 5–10 lb for machines) and drop to 8 reps;
-  otherwise +1 rep.
+- **Library:** set up for an intermediate lifter (`src/data/exercises.ts`): barbell, dumbbell, machine and
+  cable lifts grouped by body area, plus intermediate bodyweight moves (knee and full push-ups, chin-ups,
+  dips, core). Each lift has a first-time weight guess; once she logs a real weight the app follows her.
+- **Weights:** double progression over 3 sets in each exercise’s rep range (6–10 for big barbell lifts,
+  8–12 for most accessories, 10–15 for small isolation lifts). Hit the top of the range on every set → add
+  the smallest step (5 lb for most lifts, 2.5 lb for raises and flys, 10 lb for leg press and hip thrust)
+  and drop to the bottom of the range; otherwise +1 rep.
 - **Missed target:** first miss → repeat the same target; second miss in a row → ease off ~10%. At light
   weights, where one step would be a huge jump, it keeps the weight and drops 2 reps instead.
 - **She picks a lighter weight:** the app follows her lead and builds from what she actually did.

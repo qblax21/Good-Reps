@@ -9,12 +9,17 @@ import { ExerciseEditor } from './ExerciseEditor';
 export function groupExercises(all: Exercise[], recentIds: string[]) {
   const live = all.filter((e) => !e.archived).sort((a, b) => a.name.localeCompare(b.name));
   const favs = live.filter((e) => e.favorite);
+  const strength = live.filter((e) => e.category === 'strength');
   const recent = recentIds.map((id) => live.find((e) => e.id === id)).filter((e): e is Exercise => !!e && !e.favorite).slice(0, 5);
   return [
     { title: '⭐ Favourites', items: favs },
     { title: '🕐 Recent', items: recent },
-    { title: '🏋️ Strength', items: live.filter((e) => e.category === 'strength') },
-    { title: '🤸‍♀️ Bodyweight', items: live.filter((e) => e.category === 'bodyweight') },
+    { title: '🦵 Legs & glutes', items: strength.filter((e) => e.group === 'legs') },
+    { title: '🫸 Chest & shoulders', items: strength.filter((e) => e.group === 'push') },
+    { title: '🚣 Back', items: strength.filter((e) => e.group === 'pull') },
+    { title: '💪 Arms', items: strength.filter((e) => e.group === 'arms') },
+    { title: '🏋️ More strength', items: strength.filter((e) => !e.group) },
+    { title: '🤸‍♀️ Bodyweight & core', items: live.filter((e) => e.category === 'bodyweight') },
     { title: '🚶‍♀️ Cardio & movement', items: live.filter((e) => e.category === 'cardio') },
   ].filter((g) => g.items.length);
 }

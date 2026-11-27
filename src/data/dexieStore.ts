@@ -5,6 +5,22 @@ import type { Backup, Exercise, Goal, Settings, Workout, WorkoutSet } from './ty
 import { defaultSettings } from './defaults';
 import { seedExercises } from './exercises';
 
+/**
+ * Make the built-in exercises match the current library: add new ones, refresh the wording and
+ * defaults of existing ones (keeping her favourites), and hide retired ones. Hidden, not deleted,
+ * so any history logged with them stays intact. Her own custom exercises are never touched.
+ */
+async function syncBuiltInExercises(table: Table<Exercise, string>): Promise<void> {
+  const seeds = seedExercises();
+  const ids = new Set(seeds.map((s) => s.id));
+  const existing = new Map((await table.toArray()).map((e) => [e.id, e]));
+  for (const s of seeds) {
+    const old = existing.get(s.id);
+    await table.put(old ? { ...s, favorite: old.favorite, archived: old.archived, createdAt: old.createdAt, demo: old.demo } : s);
+  }
+  for (const e of existing.values()) if (!e.custom && !ids.has(e.id) && !e.archived) await table.put({ ...e, archived: true });
+}
+
 class DaisyDB extends Dexie {
   exercises!: Table<Exercise, string>;
   workouts!: Table<Workout, string>;
@@ -22,6 +38,8 @@ class DaisyDB extends Dexie {
       goals: 'id, exerciseId',
       kv: 'key',
     });
+    // v2: library reworked for an intermediate lifter. Bring existing installs up to date.
+    this.version(2).stores({}).upgrade((tx) => syncBuiltInExercises(tx.table('exercises')));
     this.on('populate', (tx) => {
       tx.table('exercises').bulkAdd(seedExercises());
     });
