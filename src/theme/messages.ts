@@ -9,8 +9,7 @@
  *   {what}  – the exercise or record in question
  * Rule of thumb: warm, a little playful, never guilt-trippy.
  */
-import { sprinkle } from './catchphrases';
-import { person } from './config';
+import { showLines, sometimes } from './catchphrases';
 
 export const greetings = {
   morning: ['Good morning, {name}!', 'Rise and shine, {name}!', 'Morning! Daisy is already barking about breakfast.'],
@@ -105,9 +104,9 @@ export const raccoonBandLines = [
 
 /** Pick who's visiting and what they say. One raccoon most of the time, the whole band now and then. */
 export function raccoonVisit(bandChance = 0.25): { line: string; count: number } {
-  if (Math.random() < bandChance) return { line: sprinkle(pick(raccoonBandLines), 'raccoon', person.name), count: 3 };
+  if (Math.random() < bandChance) return { line: pick(sometimes(raccoonBandLines, showLines.raccoons.band)), count: 3 };
   const name = pick(raccoons);
-  return { line: sprinkle(fill(pick([...raccoonLines, ...raccoonOwnLines[name]]), { name }), 'raccoon', person.name), count: 1 };
+  return { line: fill(pick(sometimes([...raccoonLines, ...raccoonOwnLines[name]], showLines.raccoons[name])), { name }), count: 1 };
 }
 
 /** Fill {tokens} in a line. */

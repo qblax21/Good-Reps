@@ -90,7 +90,7 @@ export const feedback = {
   email: '',
 };
 
-/** How often a catchphrase from the family's favourite shows gets added to a line (0–1). See catchphrases.ts. */
+/** How often a line built around a catchphrase from the family's favourite shows is used instead of a regular one (0–1). See catchphrases.ts. */
 export const catchphraseChance = 0.2;
 
 /** How often to nudge her to save a backup. */

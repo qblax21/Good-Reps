@@ -8,16 +8,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { dogs, otherDog, type DogConfig, type Pose } from '../theme/mascots/dogs';
 import { DogArt, OwlArt, PatinaArt, RaccoonArt } from '../theme/mascots/art';
 import { mascotTiming as T, person } from '../theme/config';
-import { sprinkle, type Speaker } from '../theme/catchphrases';
+import { showLines, sometimes } from '../theme/catchphrases';
 import { catFinishLines, catLines, fill, nightOwlLines, pick, raccoonVisit } from '../theme/messages';
 import { claimOwlNight, onCheer, onEgg, onScreen, mascotTapped, readFlag, writeFlag, type Cheer } from './bus';
 import { useSettings } from '../hooks/useStore';
 import { store } from '../data';
 import { dayKey } from '../logic/stats';
 
-/** Who's talking, for catchphrases. */
-const speakerOf = (dog: DogConfig): Speaker => (dog.id === 'dog-a' ? 'daisy' : 'eddie');
-const say = (line: string, who: Speaker) => sprinkle(line, who, person.name);
+/** Each dog's show-catchphrase lines. */
+const showFor = (dog: DogConfig) => (dog.id === 'dog-a' ? showLines.daisy : showLines.eddie);
 
 let turn = 0;
 /** Alternate between the dogs for each moment. */
@@ -55,10 +54,10 @@ export function MascotLayer() {
         const dog = nextDog();
         const vars = { name: person.name, dog: dog.name, other: otherDog(dog).name, ...c.vars };
         const pose: Pose = c.event === 'hello' ? 'popup' : 'celebrate';
-        show(dog, pose, say(fill(pick(dog.lines[c.event]), vars), speakerOf(dog)));
+        show(dog, pose, fill(pick(sometimes(dog.lines[c.event], showFor(dog)[c.event])), vars));
         // Now and then Patina wanders in after the dogs are done celebrating.
         if (c.event === 'finish' && settingsRef.current.easterEggs && Math.random() < T.catAfterWorkoutChance)
-          setTimeout(() => setCat(say(pick(catFinishLines), 'patina')), T.popupVisibleMs + 800);
+          setTimeout(() => setCat(pick(sometimes(catFinishLines, showLines.patina.afterWorkout))), T.popupVisibleMs + 800);
       }),
     [show],
   );
@@ -103,10 +102,10 @@ export function MascotLayer() {
         await store.updateSettings({ lastRaccoonDay: today });
         timers.push(window.setTimeout(() => setRaccoon(raccoonVisit()), 6000 + Math.random() * 12000));
       }
-      if (claimOwlNight(T.nightOwl, now)) timers.push(window.setTimeout(() => setOwl(say(pick(nightOwlLines), 'owl')), 2500));
+      if (claimOwlNight(T.nightOwl, now)) timers.push(window.setTimeout(() => setOwl(pick(sometimes(nightOwlLines, showLines.owl))), 2500));
       if (readFlag('patina-day') !== today && Math.random() < T.catChance) {
         writeFlag('patina-day', today);
-        timers.push(window.setTimeout(() => setCat(say(pick(catLines), 'patina')), 10000 + Math.random() * 20000));
+        timers.push(window.setTimeout(() => setCat(pick(sometimes(catLines, showLines.patina.visit))), 10000 + Math.random() * 20000));
       }
     };
     visit();
@@ -121,9 +120,9 @@ export function MascotLayer() {
   useEffect(
     () =>
       onEgg((e) => {
-        if (e.kind === 'owl') setOwl(say(pick(nightOwlLines), 'owl'));
+        if (e.kind === 'owl') setOwl(pick(sometimes(nightOwlLines, showLines.owl)));
         if (e.kind === 'raccoon') setRaccoon(raccoonVisit());
-        if (e.kind === 'patina') setCat(say(pick(catLines), 'patina'));
+        if (e.kind === 'patina') setCat(pick(sometimes(catLines, showLines.patina.visit)));
         if (e.kind === 'peek') setPeek(dogs[Math.floor(Math.random() * dogs.length)]);
         if (e.kind === 'secret') {
           const dog = dogs.find((d) => d.id === e.dogId) ?? dogs[0];
@@ -184,7 +183,7 @@ export function MascotLayer() {
               className="pointer-events-auto absolute left-8"
               initial={{ y: 110 }} animate={{ y: 34 }} exit={{ y: 110 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              onClick={() => { mascotTapped(peek.id, T.secretTaps); setPeek(null); show(peek, 'popup', say(fill(pick(peek.lines.hello), { name: person.name }), speakerOf(peek))); }}
+              onClick={() => { mascotTapped(peek.id, T.secretTaps); setPeek(null); show(peek, 'popup', fill(pick(sometimes(peek.lines.hello, showFor(peek).hello)), { name: person.name })); }}
               aria-label={`${peek.name} is peeking. Say hi!`}
             >
               <DogArt dog={peek} pose="peek" size={110} />
