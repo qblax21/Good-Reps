@@ -101,11 +101,11 @@ export function SettingsTab() {
         <SectionTitle>Fun stuff</SectionTitle>
         <Card>
           <Toggle label="Calm mode" hint="Less bouncing and movement" checked={s.reduceMotion} onChange={(reduceMotion) => set({ reduceMotion })} />
-          <Toggle label="Surprise visitors" hint="The dogs, Patina the cat, a raccoon and an owl may drop by now and then" checked={s.easterEggs} onChange={(easterEggs) => set({ easterEggs })} />
+          <Toggle label="Surprise visitors" hint="The dogs, Patina the cat, the raccoons from next door and an owl may drop by now and then" checked={s.easterEggs} onChange={(easterEggs) => set({ easterEggs })} />
           <p className="mt-3 text-base font-bold">Call a visitor</p>
           <div className="mt-1 flex flex-wrap gap-2">
             <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'patina' })}>🐱 Patina</Button>
-            <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'raccoon' })}>🦝 Raccoon</Button>
+            <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'raccoon' })}>🦝 Raccoons</Button>
             <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'owl' })}>🦉 Owl</Button>
             <Button kind="ghost" className="flex-1" onClick={() => egg({ kind: 'peek' })}>🐶 Peek</Button>
           </div>

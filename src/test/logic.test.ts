@@ -135,3 +135,16 @@ describe('intermediate library', () => {
     expect(await store.setsForExercise('sit-to-stand')).toHaveLength(1);
   });
 });
+
+describe('raccoons from next door', async () => {
+  const { raccoonVisit } = await import('../theme/messages');
+  it('sends one named raccoon, or the whole band', () => {
+    const solo = raccoonVisit(0);
+    expect(solo.count).toBe(1);
+    expect(solo.line).toMatch(/Amby|Stu|Cavs/);
+    expect(solo.line).not.toContain('{name}');
+    const band = raccoonVisit(1);
+    expect(band.count).toBe(3);
+    expect(band.line).toMatch(/Amby, Stu and Cavs/);
+  });
+});

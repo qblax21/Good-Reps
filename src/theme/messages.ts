@@ -76,8 +76,37 @@ export const catFinishLines = [
   'Patina is very proud of you. She’d just never make a fuss about it.',
 ];
 
-/** Raccoon easter egg. */
-export const raccoonLines = ['(a raccoon sneaks by…)', 'Psst… don’t tell Daisy. She’ll bark.'];
+/**
+ * The raccoons from next door: Amby, Stu and Cavs (named after King Gizzard & the Lizard Wizard).
+ * Usually one sneaks past on his own; now and then the whole band goes by together.
+ * {name} is the raccoon passing through.
+ */
+export const raccoons = ['Amby', 'Stu', 'Cavs'] as const;
+export const raccoonLines = [
+  '{name} from next door sneaks by on his way to the trash cans.',
+  '{name} is just passing through. Don’t mind him.',
+  'Psst… {name} says don’t tell Daisy. She’ll bark.',
+  '{name} waves a tiny hand and keeps on tiptoeing.',
+];
+/** Lines only one particular raccoon gets. */
+export const raccoonOwnLines: Record<(typeof raccoons)[number], string[]> = {
+  Amby: ['Amby stops to play a little harmonica, then keeps on sneaking.'],
+  Stu: ['Stu tiptoes by. He’s already working on his next album.'],
+  Cavs: ['Cavs taps out a beat on a trash can lid as he goes.'],
+};
+/** When all three go by together. */
+export const raccoonBandLines = [
+  'Amby, Stu and Cavs, on tour. Next stop: the trash cans.',
+  'The whole band is here! Amby, Stu and Cavs tiptoe past.',
+  'Amby, Stu and Cavs are out on a midnight snack run.',
+];
+
+/** Pick who's visiting and what they say. One raccoon most of the time, the whole band now and then. */
+export function raccoonVisit(bandChance = 0.25): { line: string; count: number } {
+  if (Math.random() < bandChance) return { line: pick(raccoonBandLines), count: 3 };
+  const name = pick(raccoons);
+  return { line: fill(pick([...raccoonLines, ...raccoonOwnLines[name]]), { name }), count: 1 };
+}
 
 /** Fill {tokens} in a line. */
 export function fill(line: string, vars: Record<string, string | number>): string {

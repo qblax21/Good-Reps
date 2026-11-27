@@ -1,6 +1,6 @@
 /**
  * Draws every mascot moment on top of the app: celebration pop-ups, the occasional peek,
- * Patina the cat, the rare raccoon, the night owl, and the secret sploot/zoomies.
+ * Patina the cat, the raccoons from next door (Amby, Stu and Cavs), the night owl, and the secret sploot/zoomies.
  * Nothing here ever blocks the screen — only the mascot itself catches taps.
  */
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { dogs, otherDog, type DogConfig, type Pose } from '../theme/mascots/dogs';
 import { DogArt, OwlArt, PatinaArt, RaccoonArt } from '../theme/mascots/art';
 import { mascotTiming as T, person } from '../theme/config';
-import { catFinishLines, catLines, fill, nightOwlLines, pick, raccoonLines } from '../theme/messages';
+import { catFinishLines, catLines, fill, nightOwlLines, pick, raccoonVisit } from '../theme/messages';
 import { claimOwlNight, onCheer, onEgg, onScreen, mascotTapped, readFlag, writeFlag, type Cheer } from './bus';
 import { useSettings } from '../hooks/useStore';
 import { store } from '../data';
@@ -31,7 +31,7 @@ export function MascotLayer() {
 
   const [queue, setQueue] = useState<Popup[]>([]);
   const [peek, setPeek] = useState<DogConfig | null>(null);
-  const [raccoon, setRaccoon] = useState<string | null>(null);
+  const [raccoon, setRaccoon] = useState<{ line: string; count: number } | null>(null);
   const [owl, setOwl] = useState<string | null>(null);
   const [cat, setCat] = useState<string | null>(null);
   const [trick, setTrick] = useState<{ dog: DogConfig; kind: 'sploot' | 'zoomies'; line: string } | null>(null);
@@ -96,7 +96,7 @@ export function MascotLayer() {
       const s = await store.getSettings();
       if (s.lastRaccoonDay !== today && Math.random() < T.raccoonChance) {
         await store.updateSettings({ lastRaccoonDay: today });
-        timers.push(window.setTimeout(() => setRaccoon(pick(raccoonLines)), 6000 + Math.random() * 12000));
+        timers.push(window.setTimeout(() => setRaccoon(raccoonVisit()), 6000 + Math.random() * 12000));
       }
       if (claimOwlNight(T.nightOwl, now)) timers.push(window.setTimeout(() => setOwl(pick(nightOwlLines)), 2500));
       if (readFlag('patina-day') !== today && Math.random() < T.catChance) {
@@ -117,7 +117,7 @@ export function MascotLayer() {
     () =>
       onEgg((e) => {
         if (e.kind === 'owl') setOwl(pick(nightOwlLines));
-        if (e.kind === 'raccoon') setRaccoon(pick(raccoonLines));
+        if (e.kind === 'raccoon') setRaccoon(raccoonVisit());
         if (e.kind === 'patina') setCat(pick(catLines));
         if (e.kind === 'peek') setPeek(dogs[Math.floor(Math.random() * dogs.length)]);
         if (e.kind === 'secret') {
@@ -188,20 +188,32 @@ export function MascotLayer() {
         </AnimatePresence>
       </div>
 
-      {/* Raccoon sneaks across */}
+      {/* Raccoons sneak across; their line stays put in a bubble so it can be read */}
       <AnimatePresence>
         {raccoon && (
+          <motion.div key="raccoon-line" className="absolute left-4" style={{ bottom: `calc(${TAB_BAR} + 6.5rem)` }}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} aria-hidden="true">
+            <Bubble>{raccoon.line}</Bubble>
+          </motion.div>
+        )}
+        {raccoon && (
           <motion.div
+            key="raccoon-walk"
             className="absolute"
             style={{ bottom: `calc(${TAB_BAR} + 0.25rem)` }}
-            initial={{ x: -160 }}
-            animate={{ x: typeof window !== 'undefined' ? window.innerWidth + 40 : 500, y: [0, -3, 0, -3, 0, -3, 0] }}
-            transition={{ duration: 6, ease: 'linear' }}
+            initial={{ x: raccoon.count > 1 ? -360 : -160 }}
+            animate={{ x: typeof window !== 'undefined' ? window.innerWidth + 40 : 500 }}
             onAnimationComplete={() => setRaccoon(null)}
-            role="img" aria-label="A raccoon sneaks across the screen"
+            transition={{ duration: raccoon.count > 1 ? 7.5 : 6, ease: 'linear' }}
+            role="img" aria-label={raccoon.line}
           >
-            <div className="mb-1 ml-6 text-sm font-semibold text-ink-soft italic">{raccoon}</div>
-            <RaccoonArt size={110} />
+            <div className="flex items-end gap-1">
+              {Array.from({ length: raccoon.count }, (_, i) => (
+                <motion.div key={i} animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.15 }}>
+                  <RaccoonArt size={raccoon.count > 1 ? 92 - i * 6 : 110} />
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
